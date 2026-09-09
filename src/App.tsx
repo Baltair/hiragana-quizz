@@ -5,6 +5,7 @@ import {
   SessionResult,
   CharacterSessionScore,
   CumulativeCharacterStat,
+  KanaItem,
 } from './types';
 import {
   getActiveKanaPool,
@@ -101,27 +102,50 @@ export const App: React.FC = () => {
   >({});
   const [latestResult, setLatestResult] = useState<SessionResult | null>(null);
 
-  // Start a new Quiz Session
-  const handleStartQuiz = useCallback(() => {
-    const pool = getActiveKanaPool(config);
-    if (pool.length === 0) return;
+  // Drill Mode state (for drilling missed characters)
+  const [drillPool, setDrillPool] = useState<KanaItem[] | null>(null);
+  const [isDrillMode, setIsDrillMode] = useState<boolean>(false);
+  const [effectiveRounds, setEffectiveRounds] = useState<number>(config.rounds);
 
-    saveLastConfig(config);
+  // Start a new Quiz Session (supports normal pool, targeted drillPool, or direct preset launch)
+  const handleStartQuiz = useCallback(
+    (overridePool?: KanaItem[], overrideRounds?: number, overrideConfig?: QuizConfig) => {
+      const activeConfig = overrideConfig || config;
+      const isDrill = Boolean(overridePool && overridePool.length > 0);
+      const targetPool = isDrill ? overridePool! : getActiveKanaPool(activeConfig);
+      if (targetPool.length === 0) return;
 
-    // Initialize session state
-    setCurrentRound(1);
-    setTotalAnswered(0);
-    setTotalCorrect(0);
-    setCurrentStreak(0);
-    setMaxStreak(0);
-    setStartTime(Date.now());
-    setCharacterScores({});
+      const broaderPool = getActiveKanaPool(activeConfig);
+      const sessionRounds = isDrill ? (overrideRounds || overridePool!.length) : activeConfig.rounds;
 
-    // Generate first question
-    const q1 = generateQuestion(config, pool, 1);
-    setCurrentQuestion(q1);
-    setScreen('quiz');
-  }, [config]);
+      if (overrideConfig) {
+        setConfig(overrideConfig);
+        saveLastConfig(overrideConfig);
+      } else if (!isDrill) {
+        saveLastConfig(config);
+      }
+
+      setDrillPool(isDrill ? overridePool! : null);
+      setIsDrillMode(isDrill);
+      setEffectiveRounds(sessionRounds);
+
+      // Initialize session state
+      setCurrentRound(1);
+      setTotalAnswered(0);
+      setTotalCorrect(0);
+      setCurrentStreak(0);
+      setMaxStreak(0);
+      setStartTime(Date.now());
+      setCharacterScores({});
+
+      // Generate first question
+      const sessionConfig = { ...activeConfig, rounds: sessionRounds };
+      const q1 = generateQuestion(sessionConfig, targetPool, 1, undefined, broaderPool);
+      setCurrentQuestion(q1);
+      setScreen('quiz');
+    },
+    [config]
+  );
 
   // Finish session and record results
   const finishSession = useCallback(
@@ -138,7 +162,7 @@ export const App: React.FC = () => {
       const result: SessionResult = {
         id: `sess-${Date.now()}`,
         date: new Date().toISOString(),
-        config,
+        config: { ...config, rounds: effectiveRounds },
         totalAnswered: finalAnswered,
         totalCorrect: finalCorrect,
         accuracy,
@@ -154,7 +178,7 @@ export const App: React.FC = () => {
       setLatestResult(result);
       setScreen('results');
     },
-    [config, startTime, refreshStorageData]
+    [config, effectiveRounds, startTime, refreshStorageData]
   );
 
   // Handle choice submission
@@ -195,7 +219,7 @@ export const App: React.FC = () => {
       setCharacterScores(updatedScores);
 
       // Check if session reached round limit (if not infinite)
-      const reachedEnd = config.rounds > 0 && currentRound >= config.rounds;
+      const reachedEnd = effectiveRounds > 0 && currentRound >= effectiveRounds;
 
       if (reachedEnd) {
         finishSession(newAnswered, newCorrect, newMaxStreak, updatedScores);
@@ -203,8 +227,10 @@ export const App: React.FC = () => {
         // Next round
         const nextRound = currentRound + 1;
         setCurrentRound(nextRound);
-        const pool = getActiveKanaPool(config);
-        const nextQ = generateQuestion(config, pool, nextRound, kana.id);
+        const targetPool = isDrillMode && drillPool ? drillPool : getActiveKanaPool(config);
+        const broaderPool = getActiveKanaPool(config);
+        const sessionConfig = { ...config, rounds: effectiveRounds };
+        const nextQ = generateQuestion(sessionConfig, targetPool, nextRound, kana.id, broaderPool);
         setCurrentQuestion(nextQ);
       }
     },
@@ -216,7 +242,10 @@ export const App: React.FC = () => {
       maxStreak,
       characterScores,
       config,
+      effectiveRounds,
       currentRound,
+      isDrillMode,
+      drillPool,
       finishSession,
     ]
   );
@@ -232,7 +261,7 @@ export const App: React.FC = () => {
   }, [totalAnswered, totalCorrect, maxStreak, characterScores, finishSession]);
 
   return (
-    <div className={`min-h-screen flex flex-col bg-zen-50 dark:bg-zen-950 text-zen-900 dark:text-zen-100 font-sans transition-colors selection:bg-sakura-500 selection:text-white ${theme === 'dark' ? 'dark' : ''}`}>
+    <div className={`min-h-screen flex flex-col bg-washi-50 dark:bg-zen-950 text-sumi-900 dark:text-zen-100 font-sans transition-colors selection:bg-sakura-500 selection:text-white ${theme === 'dark' ? 'dark' : ''}`}>
       {/* Global Navbar */}
       <Header
         onOpenCheatsheet={() => setIsCheatsheetOpen(true)}
@@ -248,7 +277,7 @@ export const App: React.FC = () => {
           <QuizSetup
             config={config}
             onChangeConfig={handleConfigChange}
-            onStartQuiz={handleStartQuiz}
+            onStartQuiz={(presetConfig) => handleStartQuiz(undefined, undefined, presetConfig)}
             onOpenCheatsheet={() => setIsCheatsheetOpen(true)}
             onOpenHistory={() => setIsHistoryOpen(true)}
           />
@@ -257,10 +286,11 @@ export const App: React.FC = () => {
         {screen === 'quiz' && currentQuestion && (
           <QuizCard
             question={currentQuestion}
-            config={config}
+            config={{ ...config, rounds: effectiveRounds }}
             totalAnswered={totalAnswered}
             totalCorrect={totalCorrect}
             currentStreak={currentStreak}
+            isDrillMode={isDrillMode}
             onAnswer={handleAnswer}
             onStopSession={handleStopSession}
           />
@@ -269,7 +299,8 @@ export const App: React.FC = () => {
         {screen === 'results' && latestResult && (
           <QuizResults
             result={latestResult}
-            onRestartSame={handleStartQuiz}
+            onRestartSame={() => (isDrillMode && drillPool ? handleStartQuiz(drillPool, drillPool.length) : handleStartQuiz())}
+            onDrillMissed={(missedKana) => handleStartQuiz(missedKana, missedKana.length)}
             onNewConfig={() => setScreen('setup')}
             onOpenHistory={() => setIsHistoryOpen(true)}
           />

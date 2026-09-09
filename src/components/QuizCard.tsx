@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Question, QuizConfig } from '../types';
-import { Volume2, CheckCircle2, XCircle, Flame, Square } from 'lucide-react';
+import { Volume2, CheckCircle2, XCircle, Flame, Square, Target } from 'lucide-react';
 import { playKanaSound } from '../data/hiragana';
 
 interface QuizCardProps {
@@ -9,6 +9,7 @@ interface QuizCardProps {
   totalAnswered: number;
   totalCorrect: number;
   currentStreak: number;
+  isDrillMode?: boolean;
   onAnswer: (selectedChoice: string, isCorrect: boolean) => void;
   onStopSession: () => void;
 }
@@ -19,6 +20,7 @@ export const QuizCard: React.FC<QuizCardProps> = ({
   totalAnswered,
   totalCorrect,
   currentStreak,
+  isDrillMode = false,
   onAnswer,
   onStopSession,
 }) => {
@@ -46,10 +48,12 @@ export const QuizCard: React.FC<QuizCardProps> = ({
 
       const isCorrect = choice === question.correctAnswer;
 
-      // Quick visual animation timeout (650ms) then pass to next question
+      // Dynamic learning rhythm: snappy 380ms on correct, deliberate 1000ms on mistake to digest feedback
+      const delay = isCorrect ? 380 : 1000;
+
       setTimeout(() => {
         onAnswer(choice, isCorrect);
-      }, 650);
+      }, delay);
     },
     [isAnswering, question, onAnswer]
   );
@@ -109,19 +113,38 @@ export const QuizCard: React.FC<QuizCardProps> = ({
     <div className="max-w-3xl mx-auto px-4 py-6 sm:py-10 animate-fade-in">
       {/* Status Bar */}
       <div className="bg-white dark:bg-zen-800 rounded-2xl p-4 shadow-md border border-zen-200 dark:border-zen-700 flex items-center justify-between mb-6">
-        {/* Round info */}
-        <div className="flex items-center space-x-3">
-          <span className="px-3 py-1 rounded-full text-xs font-bold bg-zen-100 dark:bg-zen-700 text-zen-700 dark:text-zen-300">
-            {config.rounds === 0
-              ? `Round ${question.roundNumber} (∞)`
-              : `Round ${question.roundNumber} / ${config.rounds}`}
-          </span>
-          {currentStreak > 1 && (
-            <span className="flex items-center text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 px-2.5 py-1 rounded-full border border-amber-200 dark:border-amber-800 animate-pulse">
+        {/* Round info & Drill badge */}
+        <div className="flex items-center space-x-2 sm:space-x-3">
+          {isDrillMode ? (
+            <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800 flex items-center shadow-sm">
+              <Target className="w-3.5 h-3.5 mr-1 text-amber-600 dark:text-amber-400" />
+              <span>Drill ({question.roundNumber}/{config.rounds})</span>
+            </span>
+          ) : (
+            <span className="px-3 py-1 rounded-full text-xs font-bold bg-zen-100 dark:bg-zen-700 text-zen-700 dark:text-zen-300">
+              {config.rounds === 0
+                ? `Round ${question.roundNumber} (∞)`
+                : `Round ${question.roundNumber} / ${config.rounds}`}
+            </span>
+          )}
+
+          {/* Tiered Streak Milestones */}
+          {currentStreak >= 10 ? (
+            <span className="flex items-center text-xs font-bold text-sakura-700 dark:text-sakura-300 bg-sakura-50 dark:bg-sakura-950/70 px-2.5 py-1 rounded-full border border-sakura-300 dark:border-sakura-700 shadow-sm animate-pulse">
+              <span className="mr-1">🌸</span>
+              Masterful! {currentStreak}
+            </span>
+          ) : currentStreak >= 5 ? (
+            <span className="flex items-center text-xs font-bold text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-950/60 px-2.5 py-1 rounded-full border border-orange-200 dark:border-orange-800 animate-pulse shadow-sm">
+              <Flame className="w-3.5 h-3.5 mr-1 fill-orange-500 text-orange-500" />
+              On Fire! {currentStreak}
+            </span>
+          ) : currentStreak > 1 ? (
+            <span className="flex items-center text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 px-2.5 py-1 rounded-full border border-amber-200 dark:border-amber-800">
               <Flame className="w-3.5 h-3.5 mr-1 fill-amber-500" />
               {currentStreak} Streak!
             </span>
-          )}
+          ) : null}
         </div>
 
         {/* Live Score & Stop Action */}
@@ -148,18 +171,43 @@ export const QuizCard: React.FC<QuizCardProps> = ({
         </div>
       </div>
 
-      {/* Main Question / Prompt Card */}
+      {/* Main Question / Prompt Card with Progress & Watermark */}
       <div className="bg-white dark:bg-zen-800 rounded-3xl p-8 sm:p-12 shadow-xl border border-zen-200 dark:border-zen-700 text-center relative overflow-hidden mb-8">
+        {/* Sleek Segmented Progress Bar */}
+        {config.rounds > 0 && (
+          <div className="absolute top-0 left-0 right-0 h-1.5 bg-zen-100 dark:bg-zen-700/60 overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-sakura-500 via-sakura-400 to-amber-400 transition-all duration-300 ease-out"
+              style={{
+                width: `${Math.min(100, Math.round((question.roundNumber / config.rounds) * 100))}%`,
+              }}
+            />
+          </div>
+        )}
+
+        {/* Subtle Japanese Calligraphy Enso Watermark */}
+        <svg
+          viewBox="0 0 200 200"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-52 sm:w-72 h-52 sm:h-72 pointer-events-none opacity-[0.06] dark:opacity-[0.04] text-sumi-900 dark:text-white select-none"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="14"
+          strokeLinecap="round"
+          strokeDasharray="490 60"
+        >
+          <path d="M 165,100 A 65,65 0 1 1 150,55" />
+        </svg>
+
         {/* Subtle Background Glow */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-sakura-100/50 dark:bg-sakura-900/10 rounded-full blur-3xl pointer-events-none" />
 
         {/* Instruction badge */}
-        <p className="text-xs sm:text-sm font-medium text-zen-500 dark:text-zen-400 mb-4">
+        <p className="text-xs sm:text-sm font-medium text-zen-500 dark:text-zen-400 mb-4 relative z-10">
           {promptInstruction}
         </p>
 
         {/* Big Prompt Display */}
-        <div className="relative inline-flex items-center justify-center my-2 sm:my-4">
+        <div className="relative inline-flex items-center justify-center my-2 sm:my-4 z-10">
           <div
             className={`font-japanese font-black text-7xl sm:text-9xl text-zen-900 dark:text-white transition-all select-none ${
               isCharPrompt ? 'tracking-normal' : 'font-sans tracking-wide'

@@ -1,12 +1,12 @@
 import React from 'react';
 import { QuizConfig, QuizMode } from '../types';
 import { MAIN_KANA, DAKUTEN_KANA, COMBINATION_KANA } from '../data/hiragana';
-import { Play, Sparkles, Sliders, Layers, Infinity, BookOpen, History, Type, Shuffle } from 'lucide-react';
+import { Play, Sparkles, Sliders, Layers, Infinity, BookOpen, History, Type, Shuffle, Zap, Flame, Info } from 'lucide-react';
 
 interface QuizSetupProps {
   config: QuizConfig;
   onChangeConfig: (newConfig: QuizConfig) => void;
-  onStartQuiz: () => void;
+  onStartQuiz: (overrideConfig?: QuizConfig) => void;
   onOpenCheatsheet: () => void;
   onOpenHistory: () => void;
 }
@@ -37,6 +37,53 @@ export const QuizSetup: React.FC<QuizSetupProps> = ({
     onChangeConfig({ ...config, rounds: clamped });
   };
 
+  // Predefined Quick-Start configurations
+  const WARMUP_CONFIG: QuizConfig = {
+    rounds: 10,
+    choicesCount: 4,
+    includeDakuten: false,
+    includeCombination: false,
+    mode: 'learn_char',
+  };
+
+  const SPRINT_CONFIG: QuizConfig = {
+    rounds: 25,
+    choicesCount: 6,
+    includeDakuten: true,
+    includeCombination: true,
+    mode: 'learn_both',
+  };
+
+  const ZEN_CONFIG: QuizConfig = {
+    rounds: 0,
+    choicesCount: 4,
+    includeDakuten: false,
+    includeCombination: false,
+    mode: 'learn_char',
+  };
+
+  // Preset match checks for active styling
+  const isWarmup =
+    config.rounds === 10 &&
+    config.choicesCount === 4 &&
+    !config.includeDakuten &&
+    !config.includeCombination &&
+    config.mode === 'learn_char';
+
+  const isSprint =
+    config.rounds === 25 &&
+    config.choicesCount === 6 &&
+    config.includeDakuten &&
+    config.includeCombination &&
+    config.mode === 'learn_both';
+
+  const isZen =
+    config.rounds === 0 &&
+    config.choicesCount === 4 &&
+    !config.includeDakuten &&
+    !config.includeCombination &&
+    config.mode === 'learn_char';
+
   return (
     <div className="max-w-2xl mx-auto px-4 py-8 sm:py-12 animate-fade-in">
       {/* Hero Header */}
@@ -51,6 +98,121 @@ export const QuizSetup: React.FC<QuizSetupProps> = ({
         <p className="text-zen-600 dark:text-zen-400 text-sm sm:text-base max-w-lg mx-auto">
           Customize your quiz options, select character sets, and begin testing your kana recognition.
         </p>
+      </div>
+
+      {/* Standalone Quick-Start Presets Card */}
+      <div className="mb-5 bg-white/90 dark:bg-zen-800/90 rounded-2xl p-4 sm:p-5 shadow-lg border border-zen-200/80 dark:border-zen-700/80 backdrop-blur-sm relative z-20">
+        <div className="flex items-center justify-between mb-3 px-0.5">
+          <div className="flex items-center space-x-2">
+            <span className="p-1 rounded-md bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400">
+              <Sparkles className="w-3.5 h-3.5" />
+            </span>
+            <span className="text-xs font-bold uppercase tracking-wider text-zen-700 dark:text-zen-200">
+              Quick Start Presets
+            </span>
+          </div>
+          <span className="text-[11px] text-zen-400 dark:text-zen-500 font-medium">
+            Tap to launch immediately
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+          {/* Daily Warmup */}
+          <button
+            type="button"
+            onClick={() => onStartQuiz(WARMUP_CONFIG)}
+            className={`group p-2.5 sm:p-3 rounded-xl border-2 text-left transition-all relative hover:z-30 focus-within:z-30 cursor-pointer hover:scale-[1.01] active:scale-[0.99] ${
+              isWarmup
+                ? 'border-amber-500 bg-amber-50/80 dark:bg-amber-950/40 text-zen-900 dark:text-white shadow-sm ring-2 ring-amber-400/20'
+                : 'border-zen-200 dark:border-zen-700 hover:border-amber-300 dark:hover:border-amber-600 bg-zen-50/50 dark:bg-zen-800/40 text-zen-700 dark:text-zen-300 hover:bg-white dark:hover:bg-zen-700/40'
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2 min-w-0">
+                <div className="w-6 h-6 rounded-lg bg-amber-100 dark:bg-amber-900/60 text-amber-600 dark:text-amber-300 flex items-center justify-center shrink-0">
+                  <Zap className="w-3.5 h-3.5" />
+                </div>
+                <span className="font-bold text-xs sm:text-sm truncate">Daily Warmup</span>
+                <span
+                  className="relative z-40 inline-flex items-center justify-center text-zen-400 hover:text-zen-600 dark:text-zen-500 dark:hover:text-zen-300 group/info transition-colors cursor-help p-0.5 rounded-full hover:bg-zen-200/50 dark:hover:bg-zen-700/50 shrink-0"
+                  onClick={(e) => e.stopPropagation()}
+                  title="10 rounds • 4 choices • Main Kana"
+                >
+                  <Info className="w-3.5 h-3.5" />
+                  <span className="pointer-events-none absolute bottom-full mb-2 left-1/2 -translate-x-1/2 opacity-0 group-hover/info:opacity-100 transition-opacity duration-150 z-50 px-2.5 py-1 text-[11px] font-medium text-white bg-zen-900 dark:bg-zen-100 dark:text-zen-900 rounded-md shadow-xl whitespace-nowrap drop-shadow-md">
+                    10 rounds • 4 choices • Main Kana
+                    <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-zen-900 dark:border-t-zen-100" />
+                  </span>
+                </span>
+              </div>
+              <Play className="w-3 h-3 text-zen-400 group-hover:text-amber-600 dark:group-hover:text-amber-400 fill-current opacity-70 group-hover:opacity-100 transition-all shrink-0 ml-1" />
+            </div>
+          </button>
+
+          {/* Mastery Sprint */}
+          <button
+            type="button"
+            onClick={() => onStartQuiz(SPRINT_CONFIG)}
+            className={`group p-2.5 sm:p-3 rounded-xl border-2 text-left transition-all relative hover:z-30 focus-within:z-30 cursor-pointer hover:scale-[1.01] active:scale-[0.99] ${
+              isSprint
+                ? 'border-sakura-500 bg-sakura-50/80 dark:bg-sakura-950/40 text-zen-900 dark:text-white shadow-sm ring-2 ring-sakura-400/20'
+                : 'border-zen-200 dark:border-zen-700 hover:border-sakura-300 dark:hover:border-sakura-600 bg-zen-50/50 dark:bg-zen-800/40 text-zen-700 dark:text-zen-300 hover:bg-white dark:hover:bg-zen-700/40'
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2 min-w-0">
+                <div className="w-6 h-6 rounded-lg bg-sakura-100 dark:bg-sakura-900/60 text-sakura-600 dark:text-sakura-300 flex items-center justify-center shrink-0">
+                  <Flame className="w-3.5 h-3.5" />
+                </div>
+                <span className="font-bold text-xs sm:text-sm truncate">Mastery Sprint</span>
+                <span
+                  className="relative z-40 inline-flex items-center justify-center text-zen-400 hover:text-zen-600 dark:text-zen-500 dark:hover:text-zen-300 group/info transition-colors cursor-help p-0.5 rounded-full hover:bg-zen-200/50 dark:hover:bg-zen-700/50 shrink-0"
+                  onClick={(e) => e.stopPropagation()}
+                  title="25 rounds • 6 choices • All 107 Kana"
+                >
+                  <Info className="w-3.5 h-3.5" />
+                  <span className="pointer-events-none absolute bottom-full mb-2 left-1/2 -translate-x-1/2 opacity-0 group-hover/info:opacity-100 transition-opacity duration-150 z-50 px-2.5 py-1 text-[11px] font-medium text-white bg-zen-900 dark:bg-zen-100 dark:text-zen-900 rounded-md shadow-xl whitespace-nowrap drop-shadow-md">
+                    25 rounds • 6 choices • All 107 Kana
+                    <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-zen-900 dark:border-t-zen-100" />
+                  </span>
+                </span>
+              </div>
+              <Play className="w-3 h-3 text-zen-400 group-hover:text-sakura-600 dark:group-hover:text-sakura-400 fill-current opacity-70 group-hover:opacity-100 transition-all shrink-0 ml-1" />
+            </div>
+          </button>
+
+          {/* Endless Zen */}
+          <button
+            type="button"
+            onClick={() => onStartQuiz(ZEN_CONFIG)}
+            className={`group p-2.5 sm:p-3 rounded-xl border-2 text-left transition-all relative hover:z-30 focus-within:z-30 cursor-pointer hover:scale-[1.01] active:scale-[0.99] ${
+              isZen
+                ? 'border-emerald-500 bg-emerald-50/80 dark:bg-emerald-950/40 text-zen-900 dark:text-white shadow-sm ring-2 ring-emerald-400/20'
+                : 'border-zen-200 dark:border-zen-700 hover:border-emerald-300 dark:hover:border-emerald-600 bg-zen-50/50 dark:bg-zen-800/40 text-zen-700 dark:text-zen-300 hover:bg-white dark:hover:bg-zen-700/40'
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2 min-w-0">
+                <div className="w-6 h-6 rounded-lg bg-emerald-100 dark:bg-emerald-900/60 text-emerald-600 dark:text-emerald-300 flex items-center justify-center shrink-0">
+                  <Infinity className="w-3.5 h-3.5" />
+                </div>
+                <span className="font-bold text-xs sm:text-sm truncate">Endless Zen</span>
+                <span
+                  className="relative z-40 inline-flex items-center justify-center text-zen-400 hover:text-zen-600 dark:text-zen-500 dark:hover:text-zen-300 group/info transition-colors cursor-help p-0.5 rounded-full hover:bg-zen-200/50 dark:hover:bg-zen-700/50 shrink-0"
+                  onClick={(e) => e.stopPropagation()}
+                  title="Infinite practice • 4 choices • Relaxed pace"
+                >
+                  <Info className="w-3.5 h-3.5" />
+                  <span className="pointer-events-none absolute bottom-full mb-2 left-1/2 -translate-x-1/2 opacity-0 group-hover/info:opacity-100 transition-opacity duration-150 z-50 px-2.5 py-1 text-[11px] font-medium text-white bg-zen-900 dark:bg-zen-100 dark:text-zen-900 rounded-md shadow-xl whitespace-nowrap drop-shadow-md">
+                    Infinite practice • Relaxed pace
+                    <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-zen-900 dark:border-t-zen-100" />
+                  </span>
+                </span>
+              </div>
+              <Play className="w-3 h-3 text-zen-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 fill-current opacity-70 group-hover:opacity-100 transition-all shrink-0 ml-1" />
+            </div>
+          </button>
+        </div>
       </div>
 
       <div className="bg-white dark:bg-zen-800/90 rounded-2xl shadow-xl border border-zen-200 dark:border-zen-700 overflow-hidden backdrop-blur-sm">
@@ -341,7 +503,7 @@ export const QuizSetup: React.FC<QuizSetupProps> = ({
 
           <button
             type="button"
-            onClick={onStartQuiz}
+            onClick={() => onStartQuiz()}
             className="w-full sm:w-auto flex items-center justify-center space-x-2 px-8 py-3 rounded-xl bg-gradient-to-r from-sakura-600 to-sakura-500 hover:from-sakura-700 hover:to-sakura-600 text-white font-bold text-base shadow-lg shadow-sakura-500/25 hover:shadow-sakura-500/40 transform hover:-translate-y-0.5 active:translate-y-0 transition-all focus:outline-none focus:ring-4 focus:ring-sakura-300"
           >
             <Play className="w-5 h-5 fill-current" />

@@ -205,7 +205,8 @@ export function generateQuestion(
   config: QuizConfig,
   pool: KanaItem[],
   roundNumber: number,
-  previousKanaId?: string
+  previousKanaId?: string,
+  distractorPool?: KanaItem[]
 ): Question {
   // Try to pick a target kana different from the immediate previous round if pool allows
   let candidatePool = pool;
@@ -233,11 +234,18 @@ export function generateQuestion(
   const prompt = isCharToRomaji ? targetKana.char : targetKana.romaji;
   const correctAnswer = isCharToRomaji ? targetKana.romaji : targetKana.char;
 
-  // Number of choices clamped between 2 and pool length (and config.choicesCount)
-  const choicesCount = Math.min(Math.max(2, config.choicesCount), pool.length);
+  // Distractor sources: allow broader distractor pool when testing a small subset of kana
+  const fullDistractorPool =
+    distractorPool && distractorPool.length >= config.choicesCount
+      ? distractorPool
+      : pool.length >= config.choicesCount
+      ? pool
+      : ALL_KANA;
+
+  const choicesCount = Math.min(Math.max(2, config.choicesCount), fullDistractorPool.length);
 
   // Generate unique distractors
-  const potentialDistractors = pool.filter(k => k.id !== targetKana.id);
+  const potentialDistractors = fullDistractorPool.filter(k => k.id !== targetKana.id);
   const shuffledDistractors = shuffleArray(potentialDistractors);
 
   const selectedChoices = new Set<string>();

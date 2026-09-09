@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SessionResult, CharacterSessionScore } from '../types';
+import { SessionResult, CharacterSessionScore, KanaItem } from '../types';
 import {
   RotateCcw,
   Sliders,
@@ -8,6 +8,7 @@ import {
   Clock,
   Flame,
   Award,
+  Target,
 } from 'lucide-react';
 import { playKanaSound } from '../data/hiragana';
 
@@ -16,6 +17,7 @@ interface QuizResultsProps {
   onRestartSame: () => void;
   onNewConfig: () => void;
   onOpenHistory: () => void;
+  onDrillMissed?: (missedKana: KanaItem[]) => void;
 }
 
 export const QuizResults: React.FC<QuizResultsProps> = ({
@@ -23,6 +25,7 @@ export const QuizResults: React.FC<QuizResultsProps> = ({
   onRestartSame,
   onNewConfig,
   onOpenHistory,
+  onDrillMissed,
 }) => {
   const [filter, setFilter] = useState<'all' | 'perfect' | 'missed'>('all');
 
@@ -56,6 +59,10 @@ export const QuizResults: React.FC<QuizResultsProps> = ({
     if (mins === 0) return `${remainder}s`;
     return `${mins}m ${remainder}s`;
   };
+
+  const missedItems: KanaItem[] = characterList
+    .filter((item) => item.accuracy < 100)
+    .map((item) => item.kana);
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 sm:py-12 animate-fade-in">
@@ -123,6 +130,17 @@ export const QuizResults: React.FC<QuizResultsProps> = ({
 
         {/* Quick Action Buttons */}
         <div className="p-4 sm:p-6 bg-zen-50 dark:bg-zen-850 border-t border-zen-200 dark:border-zen-700 flex flex-wrap items-center justify-center gap-3">
+          {missedItems.length > 0 && onDrillMissed && (
+            <button
+              type="button"
+              onClick={() => onDrillMissed(missedItems)}
+              className="flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-sakura-500 to-sakura-600 hover:from-amber-600 hover:to-sakura-700 text-white font-bold text-sm shadow-md hover:shadow-lg shadow-sakura-500/25 transition-all active:scale-95 ring-2 ring-sakura-400/30"
+            >
+              <Target className="w-4 h-4" />
+              <span>Drill Missed Kana ({missedItems.length})</span>
+            </button>
+          )}
+
           <button
             type="button"
             onClick={onRestartSame}

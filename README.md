@@ -23,13 +23,25 @@ Built with **React 19**, **TypeScript**, **Vite**, and **Tailwind CSS**, and opt
   - **Learn Romaji**: Displays the Romaji sound $\rightarrow$ select the matching Hiragana character.
   - **Learn Both**: Alternates between Hiragana $\rightarrow$ Romaji and Romaji $\rightarrow$ Hiragana for dynamic testing.
 
+- **⚡ Quick-Start Presets & Custom Configuration**:
+  - 1-click curated auto-configuration: **Daily Warmup** (10 rounds, 4 choices, Main Kana), **Mastery Sprint** (25 rounds, 6 choices, All 107 Kana, Both modes), and **Endless Zen** (Infinite rounds, 4 choices).
+  - Granular custom controls: choose 2 to 10 choices with a slider/quick buttons, customize kana pools, and choose practice modes.
+
 - **⏱️ Round Control & Infinite Mode**:
   - Select quick presets (10, 20, 50 rounds), custom round counts, or enter **`0` for Infinite Mode**.
   - Safely pause or stop training at any time with the **Stop Training** button to immediately view results.
 
-- **⚡ Instant Visual Feedback & Micro-Animations**:
-  - Selecting an answer immediately highlights correct (green glow) and incorrect choices (red shake).
-  - Automatically advances to the next question after a brief feedback delay.
+- **🎨 Modern Kyoto Craft Aesthetic & Japanese Typography**:
+  - Authentic warm Japanese **Washi** paper light palette (`#faf8f5`) and deep **Sumi** ink tones (`#1c1917`).
+  - Native calligraphy with Google Fonts **Zen Maru Gothic** and a subtle **Enso (⭕)** brush watermark behind prompts.
+
+- **🌊 Dynamic Learning Rhythm & Flow State**:
+  - **Adaptive timing**: rapid **380ms** transition on correct answers to sustain flow; deliberate **1000ms** pause on mistakes to absorb feedback.
+  - Sleek top-edge visual progress bar tracking fixed-round session advancement.
+  - Tiered streak celebrations (🔥 Streak, ⚡ *On Fire!*, 🌸 *Masterful!*).
+
+- **🎯 High-Impact Retention Loop ("Drill Only Missed Characters")**:
+  - When completing a session with errors, immediately click **"Drill Missed Kana (X)"** to launch a focused session quizzing exclusively the characters you missed with full distractor choices.
 
 - **📊 Comprehensive Session Results & Per-Character Breakdown**:
   - View overall score, accuracy percentage, time elapsed, and longest streak.

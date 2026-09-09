@@ -9,15 +9,34 @@ export default {
     extend: {
       fontFamily: {
         japanese: [
+          '"Zen Maru Gothic"',
           '"Hiragino Sans"',
           '"Hiragino Kaku Gothic ProN"',
           '"Yu Gothic"',
           'Meiryo',
           '"Noto Sans JP"',
           'sans-serif'
+        ],
+        calligraphy: [
+          '"Shippori Mincho"',
+          '"Noto Serif JP"',
+          'serif'
         ]
       },
       colors: {
+        washi: {
+          50: '#faf8f5',
+          100: '#f5f2eb',
+          200: '#ebe5d8',
+          300: '#ddd4c3',
+          400: '#c5b8a1',
+        },
+        sumi: {
+          700: '#44403c',
+          800: '#292524',
+          900: '#1c1917',
+          950: '#0c0a09',
+        },
         sakura: {
           50: '#fff5f7',
           100: '#ffe4ea',
