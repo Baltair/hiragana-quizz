@@ -4,6 +4,7 @@ export interface KanaItem {
   id: string;
   char: string;
   romaji: string;
+  altRomaji?: string;
   category: KanaCategory;
   group: string;
 }

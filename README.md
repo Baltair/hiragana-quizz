@@ -24,7 +24,7 @@ Built with **React 19**, **TypeScript**, **Vite**, and **Tailwind CSS**, and opt
   - **Learn Both**: Alternates between Hiragana $\rightarrow$ Romaji and Romaji $\rightarrow$ Hiragana for dynamic testing.
 
 - **⚡ Quick-Start Presets & Custom Configuration**:
-  - 1-click curated auto-configuration: **Daily Warmup** (10 rounds, 4 choices, Main Kana), **Mastery Sprint** (25 rounds, 6 choices, All 107 Kana, Both modes), and **Endless Zen** (Infinite rounds, 4 choices).
+  - 1-click curated instant start: **Daily Warmup** (10 rounds, 4 choices, Main Kana), **Mastery Sprint** (25 rounds, 6 choices, All 107 Kana, Both modes), and **Endless Zen** (Infinite rounds, 4 choices) with interactive `ⓘ` hover tooltips.
   - Granular custom controls: choose 2 to 10 choices with a slider/quick buttons, customize kana pools, and choose practice modes.
 
 - **⏱️ Round Control & Infinite Mode**:
@@ -183,7 +183,7 @@ hiragana-quizz/
 │   ├── services/
 │   │   └── storage.ts         # LocalStorage manager (sessions, mastery stats, preferences)
 │   └── components/
-│       ├── Header.tsx         # Navbar with audio toggle, cheatsheet & history buttons
+│       ├── Header.tsx         # Navbar with theme toggle, cheatsheet & history buttons
 │       ├── QuizSetup.tsx      # Configuration screen (choices, sets, rounds, mode)
 │       ├── QuizCard.tsx       # Active quiz view with feedback & keyboard shortcuts
 │       ├── QuizResults.tsx    # Results screen with general score & per-kana breakdown

@@ -85,8 +85,8 @@ export const DAKUTEN_KANA: KanaItem[] = [
 
   // D-line (from T)
   { id: 'da', char: 'だ', romaji: 'da', category: 'dakuten', group: 'd-line' },
-  { id: 'dji', char: 'ぢ', romaji: 'ji (di)', category: 'dakuten', group: 'd-line' },
-  { id: 'dzu', char: 'づ', romaji: 'zu (du)', category: 'dakuten', group: 'd-line' },
+  { id: 'dji', char: 'ぢ', romaji: 'di', altRomaji: 'ji', category: 'dakuten', group: 'd-line' },
+  { id: 'dzu', char: 'づ', romaji: 'du', altRomaji: 'zu', category: 'dakuten', group: 'd-line' },
   { id: 'de', char: 'で', romaji: 'de', category: 'dakuten', group: 'd-line' },
   { id: 'do', char: 'ど', romaji: 'do', category: 'dakuten', group: 'd-line' },
 
@@ -284,8 +284,27 @@ export function generateQuestion(
   };
 }
 
+// Keep active utterance in module scope to prevent garbage collection mid-speech (Chromium issue)
+let activeUtterance: SpeechSynthesisUtterance | null = null;
+let cachedJaVoice: SpeechSynthesisVoice | null = null;
+
+if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+  const loadVoices = () => {
+    try {
+      const voices = window.speechSynthesis.getVoices();
+      cachedJaVoice = voices.find(v => v.lang.startsWith('ja') || v.lang === 'ja-JP') || null;
+    } catch {
+      // Ignore voice lookup errors
+    }
+  };
+  loadVoices();
+  if ('onvoiceschanged' in window.speechSynthesis) {
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+  }
+}
+
 /**
- * Audio synthesis helper using Web Speech API
+ * Audio synthesis helper using Web Speech API with Safari/iOS resilience
  */
 export function playKanaSound(text: string): void {
   if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
@@ -293,19 +312,55 @@ export function playKanaSound(text: string): void {
   }
 
   try {
-    window.speechSynthesis.cancel(); // Stop any currently playing utterance
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'ja-JP';
-    utterance.rate = 0.85; // Slightly slower for better clarity
+    // Sanitize string to avoid synthesizer reading parenthesis or punctuation
+    const cleanText = text.replace(/\s*\(.*?\)/g, '').trim();
+    if (!cleanText) return;
 
-    // Try to find a natural Japanese voice if available
-    const voices = window.speechSynthesis.getVoices();
-    const jaVoice = voices.find(v => v.lang.startsWith('ja') || v.lang === 'ja-JP');
-    if (jaVoice) {
-      utterance.voice = jaVoice;
+    // Safari fix: Resume if speech context is in paused state
+    if (window.speechSynthesis.paused) {
+      window.speechSynthesis.resume();
     }
 
-    window.speechSynthesis.speak(utterance);
+    // Clean up previous active utterance listeners
+    if (activeUtterance) {
+      activeUtterance.onend = null;
+      activeUtterance.onerror = null;
+      activeUtterance = null;
+    }
+
+    // Cancel any current utterance
+    window.speechSynthesis.cancel();
+
+    // Small delay after cancel prevents WebKit queue purge bug on iOS/Safari
+    window.setTimeout(() => {
+      try {
+        const utterance = new SpeechSynthesisUtterance(cleanText);
+        utterance.lang = 'ja-JP';
+        utterance.rate = 0.85;
+
+        // Try cached voice or lookup
+        if (!cachedJaVoice) {
+          const voices = window.speechSynthesis.getVoices();
+          cachedJaVoice = voices.find(v => v.lang.startsWith('ja') || v.lang === 'ja-JP') || null;
+        }
+        if (cachedJaVoice) {
+          utterance.voice = cachedJaVoice;
+        }
+
+        // Retain reference to prevent premature garbage collection
+        activeUtterance = utterance;
+        utterance.onend = () => {
+          activeUtterance = null;
+        };
+        utterance.onerror = () => {
+          activeUtterance = null;
+        };
+
+        window.speechSynthesis.speak(utterance);
+      } catch {
+        // Fallback gracefully
+      }
+    }, 20);
   } catch {
     // Ignore audio speech failures gracefully in unsupported browsers
   }

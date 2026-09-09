@@ -60,19 +60,10 @@ export function getHistory(): SessionResult[] {
 }
 
 export function getCumulativeStats(): Record<string, CumulativeCharacterStat> {
-  try {
-    const raw = localStorage.getItem(CUMULATIVE_STORAGE_KEY);
-    if (raw) {
-      return JSON.parse(raw);
-    }
-  } catch {
-    // Fallback to empty
-  }
-
-  // Initialize with all known kana with zero stats
-  const initial: Record<string, CumulativeCharacterStat> = {};
+  // Always initialize all known kana with current canonical definitions
+  const merged: Record<string, CumulativeCharacterStat> = {};
   for (const kana of ALL_KANA) {
-    initial[kana.id] = {
+    merged[kana.id] = {
       kana,
       totalSeen: 0,
       totalCorrect: 0,
@@ -80,7 +71,32 @@ export function getCumulativeStats(): Record<string, CumulativeCharacterStat> {
       lastPracticed: '',
     };
   }
-  return initial;
+
+  try {
+    const raw = localStorage.getItem(CUMULATIVE_STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw) as Record<string, Partial<CumulativeCharacterStat>>;
+      // Merge saved counts on top of canonical kana list
+      for (const [kanaId, savedStat] of Object.entries(parsed)) {
+        if (merged[kanaId] && savedStat) {
+          const totalSeen = typeof savedStat.totalSeen === 'number' ? savedStat.totalSeen : 0;
+          const totalCorrect = typeof savedStat.totalCorrect === 'number' ? savedStat.totalCorrect : 0;
+          const accuracy = totalSeen > 0 ? Math.round((totalCorrect / totalSeen) * 100) : 0;
+          merged[kanaId] = {
+            ...merged[kanaId],
+            totalSeen,
+            totalCorrect,
+            accuracy,
+            lastPracticed: typeof savedStat.lastPracticed === 'string' ? savedStat.lastPracticed : '',
+          };
+        }
+      }
+    }
+  } catch {
+    // Fallback to initial base gracefully
+  }
+
+  return merged;
 }
 
 export function saveSession(result: SessionResult): void {

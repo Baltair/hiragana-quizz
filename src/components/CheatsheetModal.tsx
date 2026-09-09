@@ -33,6 +33,7 @@ export const CheatsheetModal: React.FC<CheatsheetModalProps> = ({ isOpen, onClos
     ? currentList.filter(
         (k) =>
           k.romaji.toLowerCase().includes(query) ||
+          (k.altRomaji && k.altRomaji.toLowerCase().includes(query)) ||
           k.char.includes(query) ||
           k.group.toLowerCase().includes(query)
       )
@@ -162,6 +163,11 @@ export const CheatsheetModal: React.FC<CheatsheetModalProps> = ({ isOpen, onClos
                       </div>
                       <div className="text-xs font-mono font-bold text-sakura-600 dark:text-sakura-400">
                         {item.romaji}
+                        {item.altRomaji && (
+                          <span className="text-[10px] text-zen-400 dark:text-zen-500 font-normal ml-0.5">
+                            ({item.altRomaji})
+                          </span>
+                        )}
                       </div>
                       <Volume2 className="w-3 h-3 text-zen-300 dark:text-zen-600 group-hover:text-sakura-500 absolute top-2 right-2 transition-colors" />
                     </button>

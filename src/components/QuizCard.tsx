@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Question, QuizConfig } from '../types';
 import { Volume2, CheckCircle2, XCircle, Flame, Square, Target } from 'lucide-react';
 import { playKanaSound } from '../data/hiragana';
@@ -26,6 +26,7 @@ export const QuizCard: React.FC<QuizCardProps> = ({
 }) => {
   const [selectedChoice, setSelectedChoice] = useState<string | null>(null);
   const [isAnswering, setIsAnswering] = useState<boolean>(false);
+  const timerRef = useRef<number | null>(null);
 
   // Determine prompt helper labels
   const isCharPrompt = question.promptType === 'char_to_romaji';
@@ -33,10 +34,17 @@ export const QuizCard: React.FC<QuizCardProps> = ({
     ? 'What is the pronunciation of this character?'
     : 'Select the matching Hiragana character for this sound';
 
-  // Reset selection and answering state on new question
+  // Reset selection and answering state on new question, clearing any active delay timer
   useEffect(() => {
     setSelectedChoice(null);
     setIsAnswering(false);
+
+    return () => {
+      if (timerRef.current !== null) {
+        window.clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+    };
   }, [question.id]);
 
   const handleSelectChoice = useCallback(
@@ -51,7 +59,12 @@ export const QuizCard: React.FC<QuizCardProps> = ({
       // Dynamic learning rhythm: snappy 380ms on correct, deliberate 1000ms on mistake to digest feedback
       const delay = isCorrect ? 380 : 1000;
 
-      setTimeout(() => {
+      if (timerRef.current !== null) {
+        window.clearTimeout(timerRef.current);
+      }
+
+      timerRef.current = window.setTimeout(() => {
+        timerRef.current = null;
         onAnswer(choice, isCorrect);
       }, delay);
     },
@@ -161,7 +174,13 @@ export const QuizCard: React.FC<QuizCardProps> = ({
 
           <button
             type="button"
-            onClick={onStopSession}
+            onClick={() => {
+              if (timerRef.current !== null) {
+                window.clearTimeout(timerRef.current);
+                timerRef.current = null;
+              }
+              onStopSession();
+            }}
             title="End this session and view your scores"
             className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border border-red-200 dark:border-red-900/50 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 text-xs sm:text-sm font-semibold transition-colors shadow-sm"
           >
