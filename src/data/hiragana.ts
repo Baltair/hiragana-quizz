@@ -1,4 +1,4 @@
-import { KanaItem, QuizConfig, Question, QuestionPromptType } from '../types';
+import { KanaItem, QuizConfig, Question, QuestionPromptType, KanaSubset, KanaCategory } from '../types';
 
 export const MAIN_KANA: KanaItem[] = [
   // Vowels
@@ -177,10 +177,236 @@ export const KANA_BY_ID = new Map<string, KanaItem>(
   ALL_KANA.map(k => [k.id, k])
 );
 
+export const KANA_SUBSETS: KanaSubset[] = [
+  // Main Kana (Gojūon) - 10 sub-sets (46 characters)
+  {
+    id: 'main-a',
+    name: 'A-line (あ行)',
+    category: 'main',
+    kanaIds: ['a', 'i', 'u', 'e', 'o'],
+    characters: ['あ', 'い', 'う', 'え', 'お'],
+  },
+  {
+    id: 'main-ka',
+    name: 'Ka-line (か行)',
+    category: 'main',
+    kanaIds: ['ka', 'ki', 'ku', 'ke', 'ko'],
+    characters: ['か', 'き', 'く', 'け', 'こ'],
+  },
+  {
+    id: 'main-sa',
+    name: 'Sa-line (さ行)',
+    category: 'main',
+    kanaIds: ['sa', 'shi', 'su', 'se', 'so'],
+    characters: ['さ', 'し', 'す', 'せ', 'そ'],
+  },
+  {
+    id: 'main-ta',
+    name: 'Ta-line (た行)',
+    category: 'main',
+    kanaIds: ['ta', 'chi', 'tsu', 'te', 'to'],
+    characters: ['た', 'ち', 'つ', 'て', 'と'],
+  },
+  {
+    id: 'main-na',
+    name: 'Na-line (な行)',
+    category: 'main',
+    kanaIds: ['na', 'ni', 'nu', 'ne', 'no'],
+    characters: ['な', 'に', 'ぬ', 'ね', 'の'],
+  },
+  {
+    id: 'main-ha',
+    name: 'Ha-line (は行)',
+    category: 'main',
+    kanaIds: ['ha', 'hi', 'fu', 'he', 'ho'],
+    characters: ['は', 'ひ', 'ふ', 'へ', 'ほ'],
+  },
+  {
+    id: 'main-ma',
+    name: 'Ma-line (ま行)',
+    category: 'main',
+    kanaIds: ['ma', 'mi', 'mu', 'me', 'mo'],
+    characters: ['ま', 'み', 'む', 'め', 'も'],
+  },
+  {
+    id: 'main-ya',
+    name: 'Ya-line (や行)',
+    category: 'main',
+    kanaIds: ['ya', 'yu', 'yo'],
+    characters: ['や', 'ゆ', 'よ'],
+  },
+  {
+    id: 'main-ra',
+    name: 'Ra-line (ら行)',
+    category: 'main',
+    kanaIds: ['ra', 'ri', 'ru', 're', 'ro'],
+    characters: ['ら', 'り', 'る', 'れ', 'ろ'],
+  },
+  {
+    id: 'main-wa',
+    name: 'Wa-line & N (わ行・ん)',
+    category: 'main',
+    kanaIds: ['wa', 'wo', 'n'],
+    characters: ['わ', 'を', 'ん'],
+  },
+
+  // Dakuten & Handakuten - 5 sub-sets (25 characters)
+  {
+    id: 'dakuten-ga',
+    name: 'Ga-line (が行)',
+    category: 'dakuten',
+    kanaIds: ['ga', 'gi', 'gu', 'ge', 'go'],
+    characters: ['が', 'ぎ', 'ぐ', 'げ', 'ご'],
+  },
+  {
+    id: 'dakuten-za',
+    name: 'Za-line (ざ行)',
+    category: 'dakuten',
+    kanaIds: ['za', 'ji', 'zu', 'ze', 'zo'],
+    characters: ['ざ', 'じ', 'ず', 'ぜ', 'ぞ'],
+  },
+  {
+    id: 'dakuten-da',
+    name: 'Da-line (だ行)',
+    category: 'dakuten',
+    kanaIds: ['da', 'dji', 'dzu', 'de', 'do'],
+    characters: ['だ', 'ぢ', 'づ', 'で', 'ど'],
+  },
+  {
+    id: 'dakuten-ba',
+    name: 'Ba-line (ば行)',
+    category: 'dakuten',
+    kanaIds: ['ba', 'bi', 'bu', 'be', 'bo'],
+    characters: ['ば', 'び', 'ぶ', 'べ', 'ぼ'],
+  },
+  {
+    id: 'dakuten-pa',
+    name: 'Pa-line (ぱ行)',
+    category: 'dakuten',
+    kanaIds: ['pa', 'pi', 'pu', 'pe', 'po'],
+    characters: ['ぱ', 'ぴ', 'ぷ', 'ぺ', 'ぽ'],
+  },
+
+  // Combination Kana (Yōon) - 12 sub-sets (36 characters)
+  {
+    id: 'combo-kya',
+    name: 'Kya-line (きゃ行)',
+    category: 'combination',
+    kanaIds: ['kya', 'kyu', 'kyo'],
+    characters: ['きゃ', 'きゅ', 'きょ'],
+  },
+  {
+    id: 'combo-sha',
+    name: 'Sha-line (しゃ行)',
+    category: 'combination',
+    kanaIds: ['sha', 'shu', 'sho'],
+    characters: ['しゃ', 'しゅ', 'しょ'],
+  },
+  {
+    id: 'combo-cha',
+    name: 'Cha-line (ちゃ行)',
+    category: 'combination',
+    kanaIds: ['cha', 'chu', 'cho'],
+    characters: ['ちゃ', 'ちゅ', 'ちょ'],
+  },
+  {
+    id: 'combo-nya',
+    name: 'Nya-line (にゃ行)',
+    category: 'combination',
+    kanaIds: ['nya', 'nyu', 'nyo'],
+    characters: ['にゃ', 'にゅ', 'にょ'],
+  },
+  {
+    id: 'combo-hya',
+    name: 'Hya-line (ひゃ行)',
+    category: 'combination',
+    kanaIds: ['hya', 'hyu', 'hyo'],
+    characters: ['ひゃ', 'ひゅ', 'ひょ'],
+  },
+  {
+    id: 'combo-mya',
+    name: 'Mya-line (みゃ行)',
+    category: 'combination',
+    kanaIds: ['mya', 'myu', 'myo'],
+    characters: ['みゃ', 'みゅ', 'みょ'],
+  },
+  {
+    id: 'combo-rya',
+    name: 'Rya-line (りゃ行)',
+    category: 'combination',
+    kanaIds: ['rya', 'ryu', 'ryo'],
+    characters: ['りゃ', 'りゅ', 'りょ'],
+  },
+  {
+    id: 'combo-gya',
+    name: 'Gya-line (ぎゃ行)',
+    category: 'combination',
+    kanaIds: ['gya', 'gyu', 'gyo'],
+    characters: ['ぎゃ', 'ぎゅ', 'ぎょ'],
+  },
+  {
+    id: 'combo-ja',
+    name: 'Ja-line (じゃ行)',
+    category: 'combination',
+    kanaIds: ['ja', 'ju', 'jo'],
+    characters: ['じゃ', 'じゅ', 'じょ'],
+  },
+  {
+    id: 'combo-dja',
+    name: 'Dja-line (ぢゃ行)',
+    category: 'combination',
+    kanaIds: ['dja', 'dju', 'djo'],
+    characters: ['ぢゃ', 'ぢゅ', 'ぢょ'],
+  },
+  {
+    id: 'combo-bya',
+    name: 'Bya-line (びゃ行)',
+    category: 'combination',
+    kanaIds: ['bya', 'byu', 'byo'],
+    characters: ['びゃ', 'びゅ', 'びょ'],
+  },
+  {
+    id: 'combo-pya',
+    name: 'Pya-line (ぴゃ行)',
+    category: 'combination',
+    kanaIds: ['pya', 'pyu', 'pyo'],
+    characters: ['ぴゃ', 'ぴゅ', 'ぴょ'],
+  },
+];
+
+export const SUBSETS_BY_CATEGORY: Record<KanaCategory, KanaSubset[]> = {
+  main: KANA_SUBSETS.filter(s => s.category === 'main'),
+  dakuten: KANA_SUBSETS.filter(s => s.category === 'dakuten'),
+  combination: KANA_SUBSETS.filter(s => s.category === 'combination'),
+};
+
+export const ALL_SUBSET_IDS: string[] = KANA_SUBSETS.map(s => s.id);
+export const MAIN_SUBSET_IDS: string[] = SUBSETS_BY_CATEGORY.main.map(s => s.id);
+export const DAKUTEN_SUBSET_IDS: string[] = SUBSETS_BY_CATEGORY.dakuten.map(s => s.id);
+export const COMBINATION_SUBSET_IDS: string[] = SUBSETS_BY_CATEGORY.combination.map(s => s.id);
+
+export const SUBSET_BY_ID = new Map<string, KanaSubset>(
+  KANA_SUBSETS.map(s => [s.id, s])
+);
+
 /**
  * Returns active Kana based on configuration options
  */
 export function getActiveKanaPool(config: QuizConfig): KanaItem[] {
+  if (config.selectedSubsets && Array.isArray(config.selectedSubsets)) {
+    const activeKanaIds = new Set<string>();
+    for (const subsetId of config.selectedSubsets) {
+      const subset = SUBSET_BY_ID.get(subsetId);
+      if (subset) {
+        for (const kid of subset.kanaIds) {
+          activeKanaIds.add(kid);
+        }
+      }
+    }
+    return ALL_KANA.filter(k => activeKanaIds.has(k.id));
+  }
+
+  // Fallback for legacy configs or presets without explicit selectedSubsets
   const pool: KanaItem[] = [...MAIN_KANA];
   if (config.includeDakuten) {
     pool.push(...DAKUTEN_KANA);

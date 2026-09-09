@@ -10,6 +10,8 @@ import {
 import {
   getActiveKanaPool,
   generateQuestion,
+  MAIN_SUBSET_IDS,
+  ALL_SUBSET_IDS,
 } from './data/hiragana';
 import {
   getSavedConfig,
@@ -34,6 +36,7 @@ const DEFAULT_CONFIG: QuizConfig = {
   includeCombination: false,
   rounds: 10,
   mode: 'learn_char',
+  selectedSubsets: MAIN_SUBSET_IDS,
 };
 
 export const App: React.FC = () => {
@@ -113,7 +116,7 @@ export const App: React.FC = () => {
       const activeConfig = overrideConfig || config;
       const isDrill = Boolean(overridePool && overridePool.length > 0);
       const targetPool = isDrill ? overridePool! : getActiveKanaPool(activeConfig);
-      if (targetPool.length === 0) return;
+      if (targetPool.length < 4) return;
 
       const broaderPool = getActiveKanaPool(activeConfig);
       const sessionRounds = isDrill ? (overrideRounds || overridePool!.length) : activeConfig.rounds;
@@ -167,6 +170,7 @@ export const App: React.FC = () => {
           includeDakuten: false,
           includeCombination: false,
           mode: 'learn_char',
+          selectedSubsets: MAIN_SUBSET_IDS,
         });
       } else if (preset === 'sprint') {
         handleStartQuiz(undefined, undefined, {
@@ -175,6 +179,7 @@ export const App: React.FC = () => {
           includeDakuten: true,
           includeCombination: true,
           mode: 'learn_both',
+          selectedSubsets: ALL_SUBSET_IDS,
         });
       } else if (preset === 'zen') {
         handleStartQuiz(undefined, undefined, {
@@ -183,6 +188,7 @@ export const App: React.FC = () => {
           includeDakuten: false,
           includeCombination: false,
           mode: 'learn_char',
+          selectedSubsets: MAIN_SUBSET_IDS,
         });
       }
 

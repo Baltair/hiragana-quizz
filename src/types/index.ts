@@ -9,6 +9,14 @@ export interface KanaItem {
   group: string;
 }
 
+export interface KanaSubset {
+  id: string;
+  name: string;
+  category: KanaCategory;
+  kanaIds: string[];
+  characters: string[];
+}
+
 export type QuizMode = 'learn_char' | 'learn_romaji' | 'learn_pronunciation' | 'learn_both';
 
 export interface QuizConfig {
@@ -17,6 +25,7 @@ export interface QuizConfig {
   includeCombination: boolean;
   rounds: number; // 0 for infinite, >0 for fixed rounds
   mode: QuizMode;
+  selectedSubsets?: string[];
 }
 
 export type QuestionPromptType = 'char_to_romaji' | 'romaji_to_char';

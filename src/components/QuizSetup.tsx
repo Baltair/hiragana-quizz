@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
-import { QuizConfig, QuizMode } from '../types';
-import { MAIN_KANA, DAKUTEN_KANA, COMBINATION_KANA, playKanaSound } from '../data/hiragana';
+import { QuizConfig, QuizMode, KanaCategory } from '../types';
+import {
+  playKanaSound,
+  SUBSETS_BY_CATEGORY,
+  ALL_SUBSET_IDS,
+  MAIN_SUBSET_IDS,
+  DAKUTEN_SUBSET_IDS,
+  COMBINATION_SUBSET_IDS,
+  getActiveKanaPool,
+} from '../data/hiragana';
 import {
   Play,
   Sparkles,
@@ -22,6 +30,7 @@ import {
   Brain,
   HelpCircle,
   ArrowRight,
+  AlertCircle,
 } from 'lucide-react';
 
 interface QuizSetupProps {
@@ -39,6 +48,104 @@ export const QuizSetup: React.FC<QuizSetupProps> = ({
   onOpenCheatsheet,
   onOpenHistory,
 }) => {
+  // Collapsible category drawer state
+  const [openCategories, setOpenCategories] = useState<Record<KanaCategory, boolean>>({
+    main: false,
+    dakuten: false,
+    combination: false,
+  });
+
+  const toggleCategoryAccordion = (cat: KanaCategory) => {
+    setOpenCategories((prev) => ({ ...prev, [cat]: !prev[cat] }));
+  };
+
+  // Resolve active selected sub-sets
+  const activeSubsets =
+    config.selectedSubsets && Array.isArray(config.selectedSubsets)
+      ? config.selectedSubsets
+      : [
+          ...MAIN_SUBSET_IDS,
+          ...(config.includeDakuten ? DAKUTEN_SUBSET_IDS : []),
+          ...(config.includeCombination ? COMBINATION_SUBSET_IDS : []),
+        ];
+
+  // Active pool calculation and minimum-character validation
+  const activeKanaPool = getActiveKanaPool({
+    ...config,
+    selectedSubsets: activeSubsets,
+  });
+  const totalActive = activeKanaPool.length;
+  const isPoolValid = totalActive >= 4;
+
+  const handleToggleSubset = (subsetId: string) => {
+    let nextSubsets: string[];
+    if (activeSubsets.includes(subsetId)) {
+      nextSubsets = activeSubsets.filter((id) => id !== subsetId);
+    } else {
+      nextSubsets = [...activeSubsets, subsetId];
+    }
+    const hasDakuten = nextSubsets.some((id) => DAKUTEN_SUBSET_IDS.includes(id));
+    const hasCombination = nextSubsets.some((id) => COMBINATION_SUBSET_IDS.includes(id));
+
+    onChangeConfig({
+      ...config,
+      selectedSubsets: nextSubsets,
+      includeDakuten: hasDakuten,
+      includeCombination: hasCombination,
+    });
+  };
+
+  const handleToggleCategory = (cat: KanaCategory) => {
+    const catSubsetIds = SUBSETS_BY_CATEGORY[cat].map((s) => s.id);
+    const allSelected = catSubsetIds.every((id) => activeSubsets.includes(id));
+
+    let nextSubsets: string[];
+    if (allSelected) {
+      nextSubsets = activeSubsets.filter((id) => !catSubsetIds.includes(id));
+    } else {
+      const remaining = activeSubsets.filter((id) => !catSubsetIds.includes(id));
+      nextSubsets = [...remaining, ...catSubsetIds];
+    }
+    const hasDakuten = nextSubsets.some((id) => DAKUTEN_SUBSET_IDS.includes(id));
+    const hasCombination = nextSubsets.some((id) => COMBINATION_SUBSET_IDS.includes(id));
+
+    onChangeConfig({
+      ...config,
+      selectedSubsets: nextSubsets,
+      includeDakuten: hasDakuten,
+      includeCombination: hasCombination,
+    });
+  };
+
+  const handleSelectAllCategory = (cat: KanaCategory) => {
+    const catSubsetIds = SUBSETS_BY_CATEGORY[cat].map((s) => s.id);
+    const remaining = activeSubsets.filter((id) => !catSubsetIds.includes(id));
+    const nextSubsets = [...remaining, ...catSubsetIds];
+    const hasDakuten = nextSubsets.some((id) => DAKUTEN_SUBSET_IDS.includes(id));
+    const hasCombination = nextSubsets.some((id) => COMBINATION_SUBSET_IDS.includes(id));
+
+    onChangeConfig({
+      ...config,
+      selectedSubsets: nextSubsets,
+      includeDakuten: hasDakuten,
+      includeCombination: hasCombination,
+    });
+  };
+
+  const handleClearCategory = (cat: KanaCategory) => {
+    const catSubsetIds = SUBSETS_BY_CATEGORY[cat].map((s) => s.id);
+    const nextSubsets = activeSubsets.filter((id) => !catSubsetIds.includes(id));
+    const hasDakuten = nextSubsets.some((id) => DAKUTEN_SUBSET_IDS.includes(id));
+    const hasCombination = nextSubsets.some((id) => COMBINATION_SUBSET_IDS.includes(id));
+
+    onChangeConfig({
+      ...config,
+      selectedSubsets: nextSubsets,
+      includeDakuten: hasDakuten,
+      includeCombination: hasCombination,
+    });
+  };
+
   // FAQ accordion state
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
   const [activeAudioChar, setActiveAudioChar] = useState<string | null>(null);
@@ -50,11 +157,6 @@ export const QuizSetup: React.FC<QuizSetupProps> = ({
       setActiveAudioChar((prev) => (prev === char ? null : prev));
     }, 600);
   };
-
-  // Compute total active kana count based on toggles
-  let totalActive = MAIN_KANA.length;
-  if (config.includeDakuten) totalActive += DAKUTEN_KANA.length;
-  if (config.includeCombination) totalActive += COMBINATION_KANA.length;
 
   const handleModeSelect = (mode: QuizMode) => {
     onChangeConfig({ ...config, mode });
@@ -70,13 +172,14 @@ export const QuizSetup: React.FC<QuizSetupProps> = ({
     onChangeConfig({ ...config, rounds: clamped });
   };
 
-  // Predefined Quick-Start configurations
+  // Predefined Quick-Start configurations with explicit sub-sets
   const WARMUP_CONFIG: QuizConfig = {
     rounds: 10,
     choicesCount: 4,
     includeDakuten: false,
     includeCombination: false,
     mode: 'learn_char',
+    selectedSubsets: MAIN_SUBSET_IDS,
   };
 
   const SPRINT_CONFIG: QuizConfig = {
@@ -85,6 +188,7 @@ export const QuizSetup: React.FC<QuizSetupProps> = ({
     includeDakuten: true,
     includeCombination: true,
     mode: 'learn_both',
+    selectedSubsets: ALL_SUBSET_IDS,
   };
 
   const ZEN_CONFIG: QuizConfig = {
@@ -93,29 +197,176 @@ export const QuizSetup: React.FC<QuizSetupProps> = ({
     includeDakuten: false,
     includeCombination: false,
     mode: 'learn_char',
+    selectedSubsets: MAIN_SUBSET_IDS,
   };
+
+  const areSubsetsMatching = (a: string[], b: string[]) =>
+    a.length === b.length && a.every((id) => b.includes(id));
 
   // Preset match checks for active styling
   const isWarmup =
     config.rounds === 10 &&
     config.choicesCount === 4 &&
-    !config.includeDakuten &&
-    !config.includeCombination &&
-    config.mode === 'learn_char';
+    config.mode === 'learn_char' &&
+    areSubsetsMatching(activeSubsets, MAIN_SUBSET_IDS);
 
   const isSprint =
     config.rounds === 25 &&
     config.choicesCount === 6 &&
-    config.includeDakuten &&
-    config.includeCombination &&
-    config.mode === 'learn_both';
+    config.mode === 'learn_both' &&
+    areSubsetsMatching(activeSubsets, ALL_SUBSET_IDS);
 
   const isZen =
     config.rounds === 0 &&
     config.choicesCount === 4 &&
-    !config.includeDakuten &&
-    !config.includeCombination &&
-    config.mode === 'learn_char';
+    config.mode === 'learn_char' &&
+    areSubsetsMatching(activeSubsets, MAIN_SUBSET_IDS);
+
+  // Helper to render collapsible category accordion card
+  const renderCategoryCard = (
+    categoryKey: KanaCategory,
+    title: string,
+    description: string
+  ) => {
+    const categorySubsets = SUBSETS_BY_CATEGORY[categoryKey];
+    const selectedInCategory = categorySubsets.filter((s) => activeSubsets.includes(s.id));
+    const selectedKanaCount = selectedInCategory.reduce((sum, s) => sum + s.kanaIds.length, 0);
+    const totalCategoryKana = categorySubsets.reduce((sum, s) => sum + s.kanaIds.length, 0);
+    const allSelected = selectedInCategory.length === categorySubsets.length;
+    const someSelected = selectedInCategory.length > 0 && !allSelected;
+    const isOpen = openCategories[categoryKey];
+
+    return (
+      <div
+        key={categoryKey}
+        className="rounded-2xl border border-zen-200 dark:border-zen-700/80 overflow-hidden bg-white/70 dark:bg-zen-800/70 backdrop-blur-sm transition-all shadow-xs"
+      >
+        {/* Category Header Row */}
+        <div className="p-3.5 sm:p-4 flex items-center justify-between gap-3 select-none">
+          <div className="flex items-center space-x-3 min-w-0 flex-1">
+            <input
+              type="checkbox"
+              checked={allSelected}
+              ref={(el) => {
+                if (el) el.indeterminate = someSelected;
+              }}
+              onChange={(e) => {
+                e.stopPropagation();
+                handleToggleCategory(categoryKey);
+              }}
+              className="w-4 h-4 rounded text-sakura-600 accent-sakura-600 cursor-pointer shrink-0"
+              title={allSelected ? `Deselect all ${title}` : `Select all ${title}`}
+            />
+            <div
+              className="cursor-pointer flex-1 min-w-0"
+              onClick={() => toggleCategoryAccordion(categoryKey)}
+            >
+              <div className="flex items-center space-x-2 flex-wrap sm:flex-nowrap">
+                <span className="font-bold text-sm text-zen-800 dark:text-zen-200 truncate">
+                  {title}
+                </span>
+                <span
+                  className={`px-2 py-0.5 rounded text-[11px] font-mono font-semibold transition-colors ${
+                    selectedKanaCount > 0
+                      ? 'bg-sakura-50 dark:bg-sakura-500/15 text-sakura-700 dark:text-sakura-300 border border-sakura-200/60 dark:border-sakura-500/30'
+                      : 'bg-zen-100 dark:bg-zen-700 text-zen-500 dark:text-zen-400'
+                  }`}
+                >
+                  {selectedKanaCount}/{totalCategoryKana} kana
+                </span>
+              </div>
+              <p className="text-xs text-zen-500 dark:text-zen-400 truncate mt-0.5">
+                {description}
+              </p>
+            </div>
+          </div>
+
+          {/* Collapsible toggle button */}
+          <button
+            type="button"
+            onClick={() => toggleCategoryAccordion(categoryKey)}
+            aria-expanded={isOpen}
+            className="p-1.5 rounded-xl text-zen-400 hover:text-zen-700 dark:hover:text-zen-200 hover:bg-zen-100 dark:hover:bg-zen-700/60 transition-colors shrink-0 cursor-pointer"
+            title={isOpen ? `Collapse ${title} sub-sets` : `Expand ${title} sub-sets`}
+          >
+            <ChevronDown
+              className={`w-5 h-5 transition-transform duration-200 ${
+                isOpen ? 'rotate-180 text-sakura-500' : ''
+              }`}
+            />
+          </button>
+        </div>
+
+        {/* Collapsible Sub-sets Panel */}
+        {isOpen && (
+          <div className="px-3.5 sm:px-4 pb-4 pt-2 border-t border-zen-100 dark:border-zen-700/60 bg-zen-50/50 dark:bg-zen-850/40 animate-fade-in">
+            {/* Sub-set Action Bar */}
+            <div className="flex items-center justify-between py-1.5 mb-2 text-xs">
+              <span className="font-semibold text-zen-500 dark:text-zen-400 uppercase tracking-wider text-[11px]">
+                Sub-sets ({categorySubsets.length})
+              </span>
+              <div className="flex items-center space-x-3 font-medium">
+                <button
+                  type="button"
+                  onClick={() => handleSelectAllCategory(categoryKey)}
+                  className="text-sakura-600 dark:text-sakura-400 hover:underline cursor-pointer"
+                >
+                  Select All
+                </button>
+                <span className="text-zen-300 dark:text-zen-600">•</span>
+                <button
+                  type="button"
+                  onClick={() => handleClearCategory(categoryKey)}
+                  className="text-zen-500 hover:text-zen-700 dark:text-zen-400 dark:hover:text-zen-200 cursor-pointer"
+                >
+                  Clear
+                </button>
+              </div>
+            </div>
+
+            {/* Grid of Sub-sets */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {categorySubsets.map((subset) => {
+                const isSubsetSelected = activeSubsets.includes(subset.id);
+                return (
+                  <button
+                    key={subset.id}
+                    type="button"
+                    onClick={() => handleToggleSubset(subset.id)}
+                    className={`p-2.5 rounded-xl border text-left transition-all flex items-center justify-between cursor-pointer ${
+                      isSubsetSelected
+                        ? 'border-sakura-400/80 bg-sakura-50/70 dark:bg-sakura-500/15 text-zen-900 dark:text-white shadow-xs'
+                        : 'border-zen-200 dark:border-zen-700/70 bg-white/70 dark:bg-zen-800/40 text-zen-600 dark:text-zen-400 hover:border-zen-300 dark:hover:border-zen-600'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-2.5 min-w-0">
+                      <input
+                        type="checkbox"
+                        checked={isSubsetSelected}
+                        onChange={() => {}}
+                        className="w-3.5 h-3.5 rounded text-sakura-600 accent-sakura-600 cursor-pointer pointer-events-none"
+                      />
+                      <div className="min-w-0">
+                        <div className="text-xs font-bold truncate">
+                          {subset.name}
+                        </div>
+                        <div className="font-japanese text-xs text-zen-500 dark:text-zen-400 truncate tracking-wider mt-0.5">
+                          {subset.characters.join(' ')}
+                        </div>
+                      </div>
+                    </div>
+                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-zen-100 dark:bg-zen-700 text-zen-500 dark:text-zen-400 shrink-0 ml-1.5">
+                      {subset.kanaIds.length}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8 sm:py-12 animate-fade-in">
@@ -334,85 +585,46 @@ export const QuizSetup: React.FC<QuizSetupProps> = ({
                 <Type className="w-4 h-4 mr-2 text-sakura-500" />
                 2. Character Sets
               </label>
-              <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-zen-100 dark:bg-zen-700 text-zen-700 dark:text-zen-300">
+              <span
+                className={`px-2.5 py-1 text-xs font-semibold rounded-full transition-colors ${
+                  isPoolValid
+                    ? 'bg-zen-100 dark:bg-zen-700 text-zen-700 dark:text-zen-300'
+                    : 'bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800'
+                }`}
+              >
                 {totalActive} characters in pool
               </span>
             </div>
 
             <div className="space-y-3">
-              {/* Main Kana (Always included) */}
-              <div className="flex items-center justify-between p-3.5 rounded-xl bg-zen-50 dark:bg-zen-700/40 border border-zen-200 dark:border-zen-700">
-                <div className="flex items-center space-x-3">
-                  <input
-                    type="checkbox"
-                    checked={true}
-                    disabled={true}
-                    className="w-4 h-4 rounded text-sakura-600 accent-sakura-600 cursor-not-allowed"
-                  />
-                  <div>
-                    <span className="font-bold text-sm text-zen-800 dark:text-zen-200">
-                      Main Kana (Gojūon)
-                    </span>
-                    <p className="text-xs text-zen-500 dark:text-zen-400">
-                      あ, か, さ, た, な, は, ま, や, ら, わ, ん (46 basic characters)
-                    </p>
-                  </div>
-                </div>
-                <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-2 py-0.5 rounded">
-                  Required
+              {renderCategoryCard(
+                'main',
+                'Main Kana (Gojūon)',
+                'あ, か, さ, た, な, は, ま, や, ら, わ, ん (46 basic characters)'
+              )}
+
+              {renderCategoryCard(
+                'dakuten',
+                'Dakuten & Handakuten Kana',
+                'が, ざ, だ, ば, ぱ, etc. (+25 voiced sounds)'
+              )}
+
+              {renderCategoryCard(
+                'combination',
+                'Combination Kana (Yōon)',
+                'きゃ, しゃ, ちゃ, にゃ, etc. (+36 compound characters)'
+              )}
+            </div>
+
+            {/* Validation warning if fewer than 4 characters selected */}
+            {!isPoolValid && (
+              <div className="mt-3 p-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300 text-xs flex items-center space-x-2 animate-fade-in">
+                <AlertCircle className="w-4 h-4 shrink-0 text-amber-500" />
+                <span>
+                  Please select at least <strong>4 characters</strong> (currently {totalActive} selected) to start training.
                 </span>
               </div>
-
-              {/* Dakuten Kana */}
-              <label className="flex items-center justify-between p-3.5 rounded-xl border border-zen-200 dark:border-zen-700 hover:bg-zen-50/70 dark:hover:bg-zen-700/30 cursor-pointer transition-colors">
-                <div className="flex items-center space-x-3">
-                  <input
-                    type="checkbox"
-                    checked={config.includeDakuten}
-                    onChange={(e) =>
-                      onChangeConfig({ ...config, includeDakuten: e.target.checked })
-                    }
-                    className="w-4 h-4 rounded text-sakura-600 accent-sakura-600 cursor-pointer"
-                  />
-                  <div>
-                    <span className="font-bold text-sm text-zen-800 dark:text-zen-200">
-                      Dakuten & Handakuten Kana
-                    </span>
-                    <p className="text-xs text-zen-500 dark:text-zen-400">
-                      が, ざ, だ, ば, ぱ, etc. (+25 voiced sounds)
-                    </p>
-                  </div>
-                </div>
-                <span className="text-xs font-mono text-zen-400">
-                  {config.includeDakuten ? '+25 kana' : 'off'}
-                </span>
-              </label>
-
-              {/* Combination Kana */}
-              <label className="flex items-center justify-between p-3.5 rounded-xl border border-zen-200 dark:border-zen-700 hover:bg-zen-50/70 dark:hover:bg-zen-700/30 cursor-pointer transition-colors">
-                <div className="flex items-center space-x-3">
-                  <input
-                    type="checkbox"
-                    checked={config.includeCombination}
-                    onChange={(e) =>
-                      onChangeConfig({ ...config, includeCombination: e.target.checked })
-                    }
-                    className="w-4 h-4 rounded text-sakura-600 accent-sakura-600 cursor-pointer"
-                  />
-                  <div>
-                    <span className="font-bold text-sm text-zen-800 dark:text-zen-200">
-                      Combination Kana (Yōon)
-                    </span>
-                    <p className="text-xs text-zen-500 dark:text-zen-400">
-                      きゃ, しゃ, ちゃ, にゃ, etc. (+36 compound characters)
-                    </p>
-                  </div>
-                </div>
-                <span className="text-xs font-mono text-zen-400">
-                  {config.includeCombination ? '+36 kana' : 'off'}
-                </span>
-              </label>
-            </div>
+            )}
           </div>
 
           {/* 3. Number of Choices (2 to 10) */}
@@ -536,8 +748,14 @@ export const QuizSetup: React.FC<QuizSetupProps> = ({
 
           <button
             type="button"
+            disabled={!isPoolValid}
             onClick={() => onStartQuiz()}
-            className="w-full sm:w-auto flex items-center justify-center space-x-2 px-8 py-3 rounded-xl bg-gradient-to-r from-sakura-600 to-sakura-500 hover:from-sakura-700 hover:to-sakura-600 text-white font-bold text-base shadow-lg shadow-sakura-500/25 hover:shadow-sakura-500/40 transform hover:-translate-y-0.5 active:translate-y-0 transition-all focus:outline-none focus:ring-4 focus:ring-sakura-300"
+            className={`w-full sm:w-auto flex items-center justify-center space-x-2 px-8 py-3 rounded-xl font-bold text-base transition-all ${
+              isPoolValid
+                ? 'bg-gradient-to-r from-sakura-600 to-sakura-500 hover:from-sakura-700 hover:to-sakura-600 text-white shadow-lg shadow-sakura-500/25 hover:shadow-sakura-500/40 transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer focus:outline-none focus:ring-4 focus:ring-sakura-300'
+                : 'bg-zen-200 dark:bg-zen-700 text-zen-400 dark:text-zen-500 cursor-not-allowed opacity-60 shadow-none'
+            }`}
+            title={!isPoolValid ? 'Select at least 4 characters to start' : 'Start Training Session'}
           >
             <Play className="w-5 h-5 fill-current" />
             <span>Start Training</span>
