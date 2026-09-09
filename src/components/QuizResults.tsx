@@ -44,15 +44,16 @@ export const QuizResults: React.FC<QuizResultsProps> = ({
   };
 
   const handleShare = async () => {
+    const siteUrl = typeof window !== 'undefined' ? window.location.origin : 'https://hiragana.joapp.ca';
     const timeText = formatSeconds(result.durationSeconds);
-    const shareText = `🌸 I scored ${result.accuracy}% (${result.totalCorrect}/${result.totalAnswered}) on Hiragana Quiz in ${timeText} with a max streak of ${result.maxStreak}! Test your Japanese Kana recall: https://hiragana-quizz.pages.dev/`;
+    const shareText = `🌸 I scored ${result.accuracy}% (${result.totalCorrect}/${result.totalAnswered}) on Hiragana Quiz in ${timeText} with a max streak of ${result.maxStreak}! Test your Japanese Kana recall: ${siteUrl}`;
 
     if (navigator.share) {
       try {
         await navigator.share({
           title: 'Hiragana Quiz Score',
           text: shareText,
-          url: 'https://hiragana-quizz.pages.dev/',
+          url: siteUrl,
         });
         return;
       } catch (err) {

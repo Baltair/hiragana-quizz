@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://hiragana-quizz.pages.dev/sitemap.xml
+Sitemap: https://hiragana.joapp.ca/sitemap.xml
