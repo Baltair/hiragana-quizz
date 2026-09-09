@@ -151,6 +151,11 @@ export const COMBINATION_KANA: KanaItem[] = [
   { id: 'ju', char: 'じゅ', romaji: 'ju', category: 'combination', group: 'j-group' },
   { id: 'jo', char: 'じょ', romaji: 'jo', category: 'combination', group: 'j-group' },
 
+  // D-combinations (from ぢ)
+  { id: 'dja', char: 'ぢゃ', romaji: 'dja', altRomaji: 'ja', category: 'combination', group: 'dj-group' },
+  { id: 'dju', char: 'ぢゅ', romaji: 'dju', altRomaji: 'ju', category: 'combination', group: 'dj-group' },
+  { id: 'djo', char: 'ぢょ', romaji: 'djo', altRomaji: 'jo', category: 'combination', group: 'dj-group' },
+
   // B-combinations
   { id: 'bya', char: 'びゃ', romaji: 'bya', category: 'combination', group: 'by-group' },
   { id: 'byu', char: 'びゅ', romaji: 'byu', category: 'combination', group: 'by-group' },
