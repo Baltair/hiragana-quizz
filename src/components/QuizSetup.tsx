@@ -88,7 +88,7 @@ export const QuizSetup: React.FC<QuizSetupProps> = ({
     <div className="max-w-2xl mx-auto px-4 py-8 sm:py-12 animate-fade-in">
       {/* Hero Header */}
       <div className="text-center mb-8">
-        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-sakura-100 dark:bg-sakura-950/70 text-sakura-700 dark:text-sakura-300 mb-3 border border-sakura-200 dark:border-sakura-800">
+        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-sakura-100 dark:bg-sakura-500/15 text-sakura-700 dark:text-sakura-300 mb-3 border border-sakura-200 dark:border-sakura-500/30">
           <Sparkles className="w-3.5 h-3.5 mr-1" />
           Interactive Hiragana Training
         </span>
@@ -123,7 +123,7 @@ export const QuizSetup: React.FC<QuizSetupProps> = ({
             onClick={() => onStartQuiz(WARMUP_CONFIG)}
             className={`group p-2.5 sm:p-3 rounded-xl border-2 text-left transition-all relative hover:z-30 focus-within:z-30 cursor-pointer hover:scale-[1.01] active:scale-[0.99] ${
               isWarmup
-                ? 'border-amber-500 bg-amber-50/80 dark:bg-amber-950/40 text-zen-900 dark:text-white shadow-sm ring-2 ring-amber-400/20'
+                ? 'border-amber-500 bg-amber-50/80 dark:bg-amber-500/10 text-zen-900 dark:text-white shadow-sm ring-2 ring-amber-400/20'
                 : 'border-zen-200 dark:border-zen-700 hover:border-amber-300 dark:hover:border-amber-600 bg-zen-50/50 dark:bg-zen-800/40 text-zen-700 dark:text-zen-300 hover:bg-white dark:hover:bg-zen-700/40'
             }`}
           >
@@ -155,7 +155,7 @@ export const QuizSetup: React.FC<QuizSetupProps> = ({
             onClick={() => onStartQuiz(SPRINT_CONFIG)}
             className={`group p-2.5 sm:p-3 rounded-xl border-2 text-left transition-all relative hover:z-30 focus-within:z-30 cursor-pointer hover:scale-[1.01] active:scale-[0.99] ${
               isSprint
-                ? 'border-sakura-500 bg-sakura-50/80 dark:bg-sakura-950/40 text-zen-900 dark:text-white shadow-sm ring-2 ring-sakura-400/20'
+                ? 'border-sakura-500 bg-sakura-50/80 dark:bg-sakura-500/10 text-zen-900 dark:text-white shadow-sm ring-2 ring-sakura-400/20'
                 : 'border-zen-200 dark:border-zen-700 hover:border-sakura-300 dark:hover:border-sakura-600 bg-zen-50/50 dark:bg-zen-800/40 text-zen-700 dark:text-zen-300 hover:bg-white dark:hover:bg-zen-700/40'
             }`}
           >
@@ -187,7 +187,7 @@ export const QuizSetup: React.FC<QuizSetupProps> = ({
             onClick={() => onStartQuiz(ZEN_CONFIG)}
             className={`group p-2.5 sm:p-3 rounded-xl border-2 text-left transition-all relative hover:z-30 focus-within:z-30 cursor-pointer hover:scale-[1.01] active:scale-[0.99] ${
               isZen
-                ? 'border-emerald-500 bg-emerald-50/80 dark:bg-emerald-950/40 text-zen-900 dark:text-white shadow-sm ring-2 ring-emerald-400/20'
+                ? 'border-emerald-500 bg-emerald-50/80 dark:bg-emerald-500/10 text-zen-900 dark:text-white shadow-sm ring-2 ring-emerald-400/20'
                 : 'border-zen-200 dark:border-zen-700 hover:border-emerald-300 dark:hover:border-emerald-600 bg-zen-50/50 dark:bg-zen-800/40 text-zen-700 dark:text-zen-300 hover:bg-white dark:hover:bg-zen-700/40'
             }`}
           >
@@ -235,8 +235,8 @@ export const QuizSetup: React.FC<QuizSetupProps> = ({
                 onClick={() => handleModeSelect('learn_char')}
                 className={`p-4 rounded-xl border-2 text-left transition-all relative ${
                   config.mode === 'learn_char'
-                    ? 'border-sakura-500 bg-sakura-50/70 dark:bg-sakura-950/30 text-zen-900 dark:text-white shadow-sm ring-2 ring-sakura-400/20'
-                    : 'border-zen-200 dark:border-zen-700 hover:border-zen-300 dark:hover:border-zen-600 text-zen-700 dark:text-zen-300'
+                    ? 'border-sakura-500 bg-sakura-50/70 dark:bg-sakura-500/10 text-zen-900 dark:text-white shadow-sm ring-2 ring-sakura-400/20'
+                    : 'border-zen-200 dark:border-zen-700 hover:border-zen-300 dark:hover:border-zen-600 bg-zen-50/40 dark:bg-zen-800/40 text-zen-700 dark:text-zen-300'
                 }`}
               >
                 <div className="flex items-center space-x-2 mb-1.5">
@@ -256,8 +256,8 @@ export const QuizSetup: React.FC<QuizSetupProps> = ({
                 onClick={() => handleModeSelect('learn_pronunciation')}
                 className={`p-4 rounded-xl border-2 text-left transition-all relative ${
                   config.mode === 'learn_pronunciation'
-                    ? 'border-sakura-500 bg-sakura-50/70 dark:bg-sakura-950/30 text-zen-900 dark:text-white shadow-sm ring-2 ring-sakura-400/20'
-                    : 'border-zen-200 dark:border-zen-700 hover:border-zen-300 dark:hover:border-zen-600 text-zen-700 dark:text-zen-300'
+                    ? 'border-sakura-500 bg-sakura-50/70 dark:bg-sakura-500/10 text-zen-900 dark:text-white shadow-sm ring-2 ring-sakura-400/20'
+                    : 'border-zen-200 dark:border-zen-700 hover:border-zen-300 dark:hover:border-zen-600 bg-zen-50/40 dark:bg-zen-800/40 text-zen-700 dark:text-zen-300'
                 }`}
               >
                 <div className="flex items-center space-x-2 mb-1.5">
@@ -277,8 +277,8 @@ export const QuizSetup: React.FC<QuizSetupProps> = ({
                 onClick={() => handleModeSelect('learn_both')}
                 className={`p-4 rounded-xl border-2 text-left transition-all relative ${
                   config.mode === 'learn_both'
-                    ? 'border-sakura-500 bg-sakura-50/70 dark:bg-sakura-950/30 text-zen-900 dark:text-white shadow-sm ring-2 ring-sakura-400/20'
-                    : 'border-zen-200 dark:border-zen-700 hover:border-zen-300 dark:hover:border-zen-600 text-zen-700 dark:text-zen-300'
+                    ? 'border-sakura-500 bg-sakura-50/70 dark:bg-sakura-500/10 text-zen-900 dark:text-white shadow-sm ring-2 ring-sakura-400/20'
+                    : 'border-zen-200 dark:border-zen-700 hover:border-zen-300 dark:hover:border-zen-600 bg-zen-50/40 dark:bg-zen-800/40 text-zen-700 dark:text-zen-300'
                 }`}
               >
                 <div className="flex items-center space-x-2 mb-1.5">
@@ -452,7 +452,7 @@ export const QuizSetup: React.FC<QuizSetupProps> = ({
                   onClick={() => handleRoundsChange(preset.value)}
                   className={`py-2 px-3 rounded-xl border text-sm font-semibold transition-all ${
                     config.rounds === preset.value
-                      ? 'border-sakura-500 bg-sakura-50 dark:bg-sakura-950/40 text-sakura-700 dark:text-sakura-300'
+                      ? 'border-sakura-500 bg-sakura-50 dark:bg-sakura-500/15 text-sakura-700 dark:text-sakura-300'
                       : 'border-zen-200 dark:border-zen-700 text-zen-600 dark:text-zen-300 hover:bg-zen-50 dark:hover:bg-zen-700/50'
                   }`}
                 >

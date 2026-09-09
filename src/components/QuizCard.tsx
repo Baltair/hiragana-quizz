@@ -143,7 +143,7 @@ export const QuizCard: React.FC<QuizCardProps> = ({
 
           {/* Tiered Streak Milestones */}
           {currentStreak >= 10 ? (
-            <span className="flex items-center text-xs font-bold text-sakura-700 dark:text-sakura-300 bg-sakura-50 dark:bg-sakura-950/70 px-2.5 py-1 rounded-full border border-sakura-300 dark:border-sakura-700 shadow-sm animate-pulse">
+            <span className="flex items-center text-xs font-bold text-sakura-700 dark:text-sakura-300 bg-sakura-50 dark:bg-sakura-500/15 px-2.5 py-1 rounded-full border border-sakura-300 dark:border-sakura-700 shadow-sm animate-pulse">
               <span className="mr-1">🌸</span>
               Masterful! {currentStreak}
             </span>
@@ -258,7 +258,7 @@ export const QuizCard: React.FC<QuizCardProps> = ({
           const shortcutKey = index < 9 ? index + 1 : index === 9 ? 0 : null;
 
           let buttonStyle =
-            'border-zen-200 dark:border-zen-700 bg-white dark:bg-zen-800 text-zen-800 dark:text-zen-100 hover:border-sakura-400 hover:bg-sakura-50/40 dark:hover:bg-sakura-950/20 shadow-sm';
+            'border-zen-200 dark:border-zen-700 bg-white dark:bg-zen-800 text-zen-800 dark:text-zen-100 hover:border-sakura-400 hover:bg-sakura-50/40 dark:hover:bg-sakura-500/10 shadow-sm';
 
           if (isAnswering) {
             if (isCorrect) {

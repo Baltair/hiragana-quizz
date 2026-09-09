@@ -29,7 +29,7 @@ export const Header: React.FC<HeaderProps> = ({
               <span className="font-extrabold text-lg sm:text-xl tracking-tight text-zen-900 dark:text-white">
                 Hiragana<span className="text-sakura-600 dark:text-sakura-400">Quiz</span>
               </span>
-              <span className="text-xs px-2 py-0.5 rounded-full bg-sakura-100 dark:bg-sakura-950/80 text-sakura-700 dark:text-sakura-300 font-japanese font-medium">
+              <span className="text-xs px-2 py-0.5 rounded-full bg-sakura-100 dark:bg-sakura-500/15 text-sakura-700 dark:text-sakura-300 font-japanese font-medium">
                 ひらがな
               </span>
             </div>
