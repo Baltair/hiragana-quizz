@@ -229,7 +229,7 @@ export function generateQuestion(
   let promptType: QuestionPromptType;
   if (config.mode === 'learn_char') {
     promptType = 'char_to_romaji';
-  } else if (config.mode === 'learn_pronunciation') {
+  } else if (config.mode === 'learn_romaji' || config.mode === 'learn_pronunciation') {
     promptType = 'romaji_to_char';
   } else {
     promptType = Math.random() < 0.5 ? 'char_to_romaji' : 'romaji_to_char';

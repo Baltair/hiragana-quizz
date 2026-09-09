@@ -31,8 +31,8 @@ export const QuizCard: React.FC<QuizCardProps> = ({
   // Determine prompt helper labels
   const isCharPrompt = question.promptType === 'char_to_romaji';
   const promptInstruction = isCharPrompt
-    ? 'What is the pronunciation of this character?'
-    : 'Select the matching Hiragana character for this sound';
+    ? 'What is the Romaji for this character?'
+    : 'Select the matching Hiragana character for this Romaji';
 
   // Reset selection and answering state on new question, clearing any active delay timer
   useEffect(() => {
@@ -102,17 +102,19 @@ export const QuizCard: React.FC<QuizCardProps> = ({
       case 2:
         return 'grid-cols-2 max-w-md mx-auto';
       case 3:
-        return 'grid-cols-3 max-w-lg mx-auto';
+        return 'grid-cols-1 sm:grid-cols-3 max-w-sm sm:max-w-xl mx-auto';
       case 4:
-        return 'grid-cols-2 sm:grid-cols-4 max-w-xl mx-auto';
+        return 'grid-cols-2 sm:grid-cols-4 max-w-2xl mx-auto';
       case 5:
         return 'grid-cols-2 sm:grid-cols-5 max-w-2xl mx-auto';
       case 6:
         return 'grid-cols-2 sm:grid-cols-3 max-w-2xl mx-auto';
       case 7:
+        return 'grid-cols-2 sm:grid-cols-4 max-w-2xl mx-auto';
       case 8:
         return 'grid-cols-2 sm:grid-cols-4 max-w-2xl mx-auto';
       case 9:
+        return 'grid-cols-2 sm:grid-cols-3 max-w-xl mx-auto';
       case 10:
       default:
         return 'grid-cols-2 sm:grid-cols-5 max-w-3xl mx-auto';
@@ -123,9 +125,9 @@ export const QuizCard: React.FC<QuizCardProps> = ({
     totalAnswered > 0 ? Math.round((totalCorrect / totalAnswered) * 100) : 100;
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-6 sm:py-10 animate-fade-in">
+    <div className="w-full max-w-3xl mx-auto px-4 py-6 sm:py-10 animate-fade-in">
       {/* Status Bar */}
-      <div className="bg-white dark:bg-zen-800 rounded-2xl p-4 shadow-md border border-zen-200 dark:border-zen-700 flex items-center justify-between mb-6">
+      <div className="bg-white dark:bg-zen-800 rounded-2xl p-4 shadow-md border border-zen-200 dark:border-zen-700 flex flex-wrap items-center justify-between gap-3 mb-6">
         {/* Round info & Drill badge */}
         <div className="flex items-center space-x-2 sm:space-x-3">
           {isDrillMode ? (
@@ -191,7 +193,7 @@ export const QuizCard: React.FC<QuizCardProps> = ({
       </div>
 
       {/* Main Question / Prompt Card with Progress & Watermark */}
-      <div className="bg-white dark:bg-zen-800 rounded-3xl p-8 sm:p-12 shadow-xl border border-zen-200 dark:border-zen-700 text-center relative overflow-hidden mb-8">
+      <div className="bg-white dark:bg-zen-800 rounded-3xl p-6 sm:p-10 md:p-12 shadow-xl border border-zen-200 dark:border-zen-700 text-center relative overflow-hidden mb-6 sm:mb-8">
         {/* Sleek Segmented Progress Bar */}
         {config.rounds > 0 && (
           <div className="absolute top-0 left-0 right-0 h-1.5 bg-zen-100 dark:bg-zen-700/60 overflow-hidden">
@@ -204,32 +206,16 @@ export const QuizCard: React.FC<QuizCardProps> = ({
           </div>
         )}
 
-        {/* Subtle Japanese Calligraphy Enso Watermark */}
-        <svg
-          viewBox="0 0 200 200"
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-52 sm:w-72 h-52 sm:h-72 pointer-events-none opacity-[0.06] dark:opacity-[0.04] text-sumi-900 dark:text-white select-none"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="14"
-          strokeLinecap="round"
-          strokeDasharray="490 60"
-        >
-          <path d="M 165,100 A 65,65 0 1 1 150,55" />
-        </svg>
-
-        {/* Subtle Background Glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-sakura-100/50 dark:bg-sakura-900/10 rounded-full blur-3xl pointer-events-none" />
-
         {/* Instruction badge */}
-        <p className="text-xs sm:text-sm font-medium text-zen-500 dark:text-zen-400 mb-4 relative z-10">
+        <p className="text-xs sm:text-sm font-medium text-zen-500 dark:text-zen-400 mb-2 sm:mb-3 relative z-10">
           {promptInstruction}
         </p>
 
         {/* Big Prompt Display */}
-        <div className="relative inline-flex items-center justify-center my-2 sm:my-4 z-10">
+        <div className="flex flex-col items-center justify-center my-2 sm:my-4 relative z-10">
           <div
-            className={`font-japanese font-black text-7xl sm:text-9xl text-zen-900 dark:text-white transition-all select-none ${
-              isCharPrompt ? 'tracking-normal' : 'font-sans tracking-wide'
+            className={`font-black text-6xl sm:text-8xl md:text-9xl text-zen-900 dark:text-white transition-all select-none leading-none ${
+              isCharPrompt ? 'font-japanese tracking-normal' : 'font-sans tracking-wide'
             }`}
           >
             {question.prompt}
@@ -240,22 +226,26 @@ export const QuizCard: React.FC<QuizCardProps> = ({
             <button
               type="button"
               onClick={() => playKanaSound(question.targetKana.char)}
-              title="Listen to pronunciation"
-              className="absolute -right-12 sm:-right-14 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-zen-100 dark:bg-zen-700 hover:bg-sakura-100 dark:hover:bg-sakura-900/40 text-zen-600 dark:text-zen-300 hover:text-sakura-600 transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-sakura-400"
-              aria-label="Listen to pronunciation"
+              title="Listen to audio"
+              className="mt-3.5 inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full bg-zen-100 dark:bg-zen-700/90 hover:bg-sakura-100 dark:hover:bg-sakura-900/40 text-zen-700 dark:text-zen-200 hover:text-sakura-600 dark:hover:text-sakura-300 text-xs font-semibold transition-all shadow-xs active:scale-95 border border-zen-200/60 dark:border-zen-600/60 focus:outline-none focus:ring-2 focus:ring-sakura-400"
+              aria-label="Listen to audio"
             >
-              <Volume2 className="w-5 h-5" />
+              <Volume2 className="w-3.5 h-3.5 text-sakura-500" />
+              <span>Listen Audio</span>
             </button>
           )}
         </div>
       </div>
 
       {/* Choices Grid */}
-      <div className={`grid gap-3 sm:gap-4 ${getGridColsClass(question.choices.length)}`}>
+      <div className={`grid gap-2.5 sm:gap-3.5 ${getGridColsClass(question.choices.length)}`}>
         {question.choices.map((choice, index) => {
           const isSelected = selectedChoice === choice;
           const isCorrect = choice === question.correctAnswer;
           const shortcutKey = index < 9 ? index + 1 : index === 9 ? 0 : null;
+          const isLastOdd =
+            question.choices.length % 2 === 1 &&
+            index === question.choices.length - 1;
 
           let buttonStyle =
             'border-zen-200 dark:border-zen-700 bg-white dark:bg-zen-800 text-zen-800 dark:text-zen-100 hover:border-sakura-400 hover:bg-sakura-50/40 dark:hover:bg-sakura-500/10 shadow-sm';
@@ -282,27 +272,41 @@ export const QuizCard: React.FC<QuizCardProps> = ({
               type="button"
               disabled={isAnswering}
               onClick={() => handleSelectChoice(choice)}
-              className={`relative flex items-center justify-center p-4 sm:p-5 rounded-2xl border-2 font-bold text-xl sm:text-2xl transition-all duration-200 active:scale-95 focus:outline-none focus:ring-2 focus:ring-sakura-400 ${
-                isCharPrompt ? 'font-sans' : 'font-japanese text-2xl sm:text-3xl'
+              className={`relative flex items-center justify-between px-2.5 sm:px-3.5 py-3 sm:py-3.5 rounded-2xl border-2 font-bold transition-all duration-200 active:scale-95 focus:outline-none focus:ring-2 focus:ring-sakura-400 min-h-[58px] sm:min-h-[64px] ${
+                isLastOdd
+                  ? 'col-span-2 sm:col-span-1 w-full max-w-[260px] mx-auto sm:max-w-none'
+                  : ''
+              } ${
+                isCharPrompt
+                  ? 'font-sans text-xl sm:text-2xl'
+                  : 'font-japanese text-2xl sm:text-3xl'
               } ${buttonStyle}`}
             >
-              {/* Shortcut Key Badge */}
-              {shortcutKey !== null && (
-                <span className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 text-[10px] sm:text-xs font-mono font-medium text-zen-400 dark:text-zen-500 bg-zen-100 dark:bg-zen-700/60 px-1.5 py-0.5 rounded">
-                  {shortcutKey}
+              {/* Left Slot: Shortcut Key Badge */}
+              <div className="w-6 sm:w-7 flex items-center justify-center shrink-0 self-center">
+                {shortcutKey !== null && (
+                  <span className="text-[10px] sm:text-xs font-mono font-bold text-zen-500 dark:text-zen-400 bg-zen-100 dark:bg-zen-700/80 w-5 h-5 sm:w-6 sm:h-6 rounded-md flex items-center justify-center select-none shadow-xs border border-zen-200/60 dark:border-zen-600/50 leading-none">
+                    {shortcutKey}
+                  </span>
+                )}
+              </div>
+
+              {/* Center Slot: Choice Label with Optical Baseline Centering */}
+              <div className="flex-1 flex items-center justify-center text-center px-1 min-w-0 self-center">
+                <span className="inline-block leading-none tracking-tight select-none truncate -translate-y-[2px] sm:-translate-y-[2.5px]">
+                  {choice}
                 </span>
-              )}
+              </div>
 
-              {/* Choice Label */}
-              <span>{choice}</span>
-
-              {/* Status Icons on Selection */}
-              {isAnswering && isCorrect && (
-                <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 absolute right-2.5 sm:right-3 top-1/2 -translate-y-1/2 animate-pop" />
-              )}
-              {isAnswering && isSelected && !isCorrect && (
-                <XCircle className="w-5 h-5 text-red-600 dark:text-red-400 absolute right-2.5 sm:right-3 top-1/2 -translate-y-1/2 animate-pop" />
-              )}
+              {/* Right Slot: Status Icons */}
+              <div className="w-6 sm:w-7 flex items-center justify-center shrink-0 self-center">
+                {isAnswering && isCorrect && (
+                  <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 animate-pop shrink-0" />
+                )}
+                {isAnswering && isSelected && !isCorrect && (
+                  <XCircle className="w-5 h-5 text-red-600 dark:text-red-400 animate-pop shrink-0" />
+                )}
+              </div>
             </button>
           );
         })}

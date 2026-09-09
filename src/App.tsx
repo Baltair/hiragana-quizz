@@ -147,6 +147,54 @@ export const App: React.FC = () => {
     [config]
   );
 
+  // Handle URL deep-linking query parameters (?preset=warmup|sprint|zen, ?view=cheatsheet|history)
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const preset = params.get('preset') || params.get('mode');
+      const view = params.get('view');
+
+      if (view === 'cheatsheet') {
+        setIsCheatsheetOpen(true);
+      } else if (view === 'history') {
+        setIsHistoryOpen(true);
+      }
+
+      if (preset === 'warmup') {
+        handleStartQuiz(undefined, undefined, {
+          rounds: 10,
+          choicesCount: 4,
+          includeDakuten: false,
+          includeCombination: false,
+          mode: 'learn_char',
+        });
+      } else if (preset === 'sprint') {
+        handleStartQuiz(undefined, undefined, {
+          rounds: 25,
+          choicesCount: 6,
+          includeDakuten: true,
+          includeCombination: true,
+          mode: 'learn_both',
+        });
+      } else if (preset === 'zen') {
+        handleStartQuiz(undefined, undefined, {
+          rounds: 0,
+          choicesCount: 4,
+          includeDakuten: false,
+          includeCombination: false,
+          mode: 'learn_char',
+        });
+      }
+
+      // If preset was triggered, clean up URL query params smoothly
+      if (preset || view) {
+        window.history.replaceState({}, '', window.location.pathname);
+      }
+    } catch (e) {
+      // Ignore URL parsing errors
+    }
+  }, [handleStartQuiz]);
+
   // Finish session and record results
   const finishSession = useCallback(
     (

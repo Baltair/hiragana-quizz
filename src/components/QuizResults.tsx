@@ -9,6 +9,8 @@ import {
   Flame,
   Award,
   Target,
+  Share2,
+  Check,
 } from 'lucide-react';
 import { playKanaSound } from '../data/hiragana';
 
@@ -28,10 +30,44 @@ export const QuizResults: React.FC<QuizResultsProps> = ({
   onDrillMissed,
 }) => {
   const [filter, setFilter] = useState<'all' | 'perfect' | 'missed'>('all');
+  const [isCopied, setIsCopied] = useState(false);
 
   const characterList: CharacterSessionScore[] = Object.values(
     result.characterScores
   );
+
+  const formatSeconds = (sec: number) => {
+    const mins = Math.floor(sec / 60);
+    const remainder = sec % 60;
+    if (mins === 0) return `${remainder}s`;
+    return `${mins}m ${remainder}s`;
+  };
+
+  const handleShare = async () => {
+    const timeText = formatSeconds(result.durationSeconds);
+    const shareText = `🌸 I scored ${result.accuracy}% (${result.totalCorrect}/${result.totalAnswered}) on Hiragana Quiz in ${timeText} with a max streak of ${result.maxStreak}! Test your Japanese Kana recall: https://hiragana-quizz.pages.dev/`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Hiragana Quiz Score',
+          text: shareText,
+          url: 'https://hiragana-quizz.pages.dev/',
+        });
+        return;
+      } catch (err) {
+        // Fallback to clipboard if share was cancelled or failed
+      }
+    }
+
+    try {
+      await navigator.clipboard.writeText(shareText);
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2500);
+    } catch (e) {
+      // Ignore clipboard write errors
+    }
+  };
 
   const filteredKana = characterList.filter((item) => {
     if (filter === 'perfect') return item.accuracy === 100;
@@ -52,13 +88,6 @@ export const QuizResults: React.FC<QuizResultsProps> = ({
     feedbackBadge = 'Good Effort! がんばった';
     badgeColor = 'bg-indigo-100 text-indigo-800 dark:bg-indigo-950/60 dark:text-indigo-300';
   }
-
-  const formatSeconds = (sec: number) => {
-    const mins = Math.floor(sec / 60);
-    const remainder = sec % 60;
-    if (mins === 0) return `${remainder}s`;
-    return `${mins}m ${remainder}s`;
-  };
 
   const missedItems: KanaItem[] = characterList
     .filter((item) => item.accuracy < 100)
@@ -157,6 +186,25 @@ export const QuizResults: React.FC<QuizResultsProps> = ({
           >
             <Sliders className="w-4 h-4 text-zen-500" />
             <span>Change Settings</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={handleShare}
+            className="flex items-center space-x-2 px-5 py-2.5 rounded-xl border border-zen-300 dark:border-zen-600 bg-white dark:bg-zen-800 text-zen-800 dark:text-zen-200 hover:bg-zen-100 dark:hover:bg-zen-700 font-semibold text-sm transition-colors shadow-sm"
+            title="Share your score with friends or on social media"
+          >
+            {isCopied ? (
+              <>
+                <Check className="w-4 h-4 text-emerald-500" />
+                <span className="text-emerald-600 dark:text-emerald-400">Copied to Clipboard!</span>
+              </>
+            ) : (
+              <>
+                <Share2 className="w-4 h-4 text-sakura-500" />
+                <span>Share Score</span>
+              </>
+            )}
           </button>
 
           <button

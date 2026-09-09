@@ -2,13 +2,135 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>あ</text></svg>" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+    <link rel="manifest" href="/site.webmanifest" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Interactive Hiragana Quiz and Japanese Kana training app for learning Hiragana characters and pronunciations." />
-    <title>Hiragana Quiz — Learn Japanese Kana</title>
+    
+    <!-- Primary SEO Metadata -->
+    <title>Hiragana Quiz — Master Japanese Kana with Interactive Drills</title>
+    <meta name="description" content="Master all 107 Japanese Hiragana characters with interactive speed drills, native audio pronunciations, keyboard shortcuts, and targeted mistake reviews. 100% free with zero ads." />
+    <meta name="keywords" content="hiragana quiz, learn hiragana, japanese kana quiz, hiragana practice, hiragana test, hiragana chart audio, learn japanese alphabet, dakuten practice, yoon hiragana, japanese flashcards" />
+    <meta name="author" content="Hiragana Quiz" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <link rel="canonical" href="https://hiragana-quizz.pages.dev/" />
+    
+    <!-- Mobile Chrome Theme Colors -->
+    <meta name="theme-color" content="#faf8f5" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#080d1a" media="(prefers-color-scheme: dark)" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://hiragana-quizz.pages.dev/" />
+    <meta property="og:title" content="Hiragana Quiz — Master Japanese Kana with Interactive Drills" />
+    <meta property="og:description" content="Master all 107 Japanese Hiragana characters with interactive speed drills, native audio pronunciations, keyboard shortcuts, and targeted mistake reviews. 100% free with zero ads." />
+    <meta property="og:image" content="https://hiragana-quizz.pages.dev/og-image.svg" />
+    <meta property="og:site_name" content="Hiragana Quiz (ひらがなクイズ)" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://hiragana-quizz.pages.dev/" />
+    <meta name="twitter:title" content="Hiragana Quiz — Master Japanese Kana with Interactive Drills" />
+    <meta name="twitter:description" content="Master all 107 Japanese Hiragana characters with interactive speed drills, native audio pronunciations, keyboard shortcuts, and targeted mistake reviews. 100% free with zero ads." />
+    <meta name="twitter:image" content="https://hiragana-quizz.pages.dev/og-image.svg" />
+
+    <!-- Google Fonts Preconnect -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Shippori+Mincho:wght@600;800&family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet">
+
+    <!-- Schema.org JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebApplication",
+          "@id": "https://hiragana-quizz.pages.dev/#webapp",
+          "name": "Hiragana Quiz",
+          "alternateName": ["Japanese Hiragana Quiz", "ひらがなクイズ", "Hiragana Practice Tool"],
+          "url": "https://hiragana-quizz.pages.dev/",
+          "description": "Interactive web application for learning and testing Japanese Hiragana characters with native speech audio, speed drills, and customizable round presets.",
+          "applicationCategory": "EducationalApplication",
+          "operatingSystem": "All",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+          },
+          "inLanguage": ["en", "ja"],
+          "featureList": [
+            "All 107 Hiragana characters (Gojūon, Dakuten, Handakuten, Yōon)",
+            "Active recall speed drills with 2 to 10 choices",
+            "Rapid keyboard shortcuts (1-9, 0)",
+            "Native Japanese audio speech synthesis",
+            "High-impact mistake drilling ('Drill Missed Kana')",
+            "100% client-side privacy with local score tracking",
+            "Searchable interactive cheatsheet reference chart"
+          ]
+        },
+        {
+          "@type": "LearningResource",
+          "@id": "https://hiragana-quizz.pages.dev/#resource",
+          "name": "Master Japanese Hiragana — Interactive Practice & Cheatsheet",
+          "learningResourceType": "Quiz",
+          "educationalLevel": "Beginner",
+          "teaches": "Japanese Hiragana writing system and native pronunciation",
+          "isAccessibleForFree": true,
+          "inLanguage": "en"
+        },
+        {
+          "@type": "FAQPage",
+          "@id": "https://hiragana-quizz.pages.dev/#faq",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "How long does it take to learn all Japanese Hiragana characters?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Most beginners can memorize the fundamental 46 Hiragana characters in 3 to 7 days by spending 15-20 minutes daily using active recall quizzes. Mastering all 107 characters (including Dakuten and Yōon combinations) typically takes 1 to 2 weeks of consistent daily practice."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What is the difference between Main Kana, Dakuten, and Combination Kana?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "The 46 Main Kana (Gojūon) are the foundation of Japanese (あ to ん). Dakuten (voicing marks \") and Handakuten (half-voicing marks °) turn sounds like k/s/t/h into g/z/d/b/p (+25 characters). Combination Kana (Yōon) combine standard kana with small ya, yu, yo to create 36 blended sounds such as kya, sha, and cha."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Why is active recall testing more effective than static flashcards?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Active recall forces your brain to retrieve character-sound associations from memory under timed conditions rather than passively recognizing them. Hiragana Quiz accelerates this with dynamic response timing (rapid 380ms transitions on correct answers and a deliberate 1000ms pause on errors) plus a dedicated 'Drill Missed Kana' loop that isolates your weak points."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Is Hiragana Quiz free, and is my progress private?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes, Hiragana Quiz is 100% free with zero ads, zero trackers, and no account creation required. All score history and character mastery statistics are stored strictly in your browser's localStorage."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Can I use keyboard shortcuts to practice faster on desktop?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes! Use number keys 1 through 9 for choices 1 to 9, and the 0 key for the 10th choice. This allows you to practice at maximum speed without moving your hands to the mouse."
+              }
+            }
+          ]
+        }
+      ]
+    }
+    </script>
+
+    <!-- Inline Theme Initializer -->
     <script>
       (function() {
         try {
@@ -24,7 +146,33 @@
     </script>
   </head>
   <body class="bg-washi-50 dark:bg-zen-950 text-sumi-900 dark:text-zen-100 min-h-screen">
-    <div id="root"></div>
+    <div id="root">
+      <!-- Lightweight crawlable semantic content for search bots and no-JS crawlers -->
+      <noscript>
+        <header style="padding: 24px; text-align: center; border-bottom: 1px solid #e7e5e4;">
+          <h1>Hiragana Quiz (ひらがなクイズ) — Master Japanese Kana</h1>
+          <p>A fast, free, interactive web app to learn and test all 107 Japanese Hiragana characters with native speech audio pronunciations.</p>
+        </header>
+        <main style="max-width: 800px; margin: 32px auto; padding: 0 16px; font-family: sans-serif; line-height: 1.6;">
+          <h2>Comprehensive Japanese Hiragana Practice</h2>
+          <p>Hiragana is the fundamental phonetic alphabet of the Japanese language. Our quiz covers all 107 characters divided into three essential sets:</p>
+          <ul>
+            <li><strong>Main Kana (Gojūon - 46 characters):</strong> あ, い, う, え, お through わ, を, ん.</li>
+            <li><strong>Dakuten &amp; Handakuten (25 voiced characters):</strong> が, ざ, だ, ば, ぱ lines.</li>
+            <li><strong>Combination Kana (Yōon - 36 compound sounds):</strong> きゃ, しゃ, ちゃ, にゃ, and more.</li>
+          </ul>
+          <h3>Key Features for Rapid Learning</h3>
+          <ul>
+            <li>Active recall multiple-choice testing with 2 to 10 choices.</li>
+            <li>Lightning-fast keyboard shortcuts (keys 1-9 and 0).</li>
+            <li>Instant native Japanese audio pronunciation via Web Speech.</li>
+            <li>Targeted mistake drill: review only the kana you missed.</li>
+            <li>100% free, no sign-up needed, and privacy-first local storage.</li>
+          </ul>
+          <p>Please enable JavaScript to launch the interactive quiz session and audio features.</p>
+        </main>
+      </noscript>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

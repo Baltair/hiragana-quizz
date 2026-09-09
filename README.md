@@ -19,8 +19,8 @@ Built with **React 19**, **TypeScript**, **Vite**, and **Tailwind CSS**, and opt
   - Total pool of **107 characters**.
 
 - **⚙️ Flexible Practice Modes**:
-  - **Learn Hiragana**: Displays the Hiragana character $\rightarrow$ select the corresponding Romaji sound.
-  - **Learn Romaji**: Displays the Romaji sound $\rightarrow$ select the matching Hiragana character.
+  - **Learn Hiragana**: Displays the Hiragana character $\rightarrow$ select the corresponding Romaji.
+  - **Learn Romaji**: Displays the Romaji $\rightarrow$ select the matching Hiragana character.
   - **Learn Both**: Alternates between Hiragana $\rightarrow$ Romaji and Romaji $\rightarrow$ Hiragana for dynamic testing.
 
 - **⚡ Quick-Start Presets & Custom Configuration**:
@@ -65,7 +65,20 @@ Built with **React 19**, **TypeScript**, **Vite**, and **Tailwind CSS**, and opt
   - Uses the browser's native Japanese Speech Synthesis (`ja-JP`).
   - Interactive audio buttons on Romaji prompts, cheatsheet cards, and results items.
 
----
+- **📱 Installable Progressive Web App (PWA)**:
+  - Configured with `site.webmanifest` and mobile theme matching for full-screen, distraction-free practice on iOS & Android.
+
+- **🔗 Deep Linking & Instant Presets**:
+  - Launch presets or reference views via URL parameters: `?preset=warmup`, `?preset=sprint`, `?preset=zen`, and `?view=cheatsheet`.
+
+- **🌸 1-Click Social Score Sharing**:
+  - Native Web Share API integration on the results screen with instant clipboard fallback to share scores, accuracy, and streaks with friends.
+
+- **🔍 Search Engine Optimization (SEO) & Structured Data**:
+  - Complete Open Graph tags, Twitter cards, SVG social cards, `sitemap.xml`, and `robots.txt`.
+  - Schema.org JSON-LD structured data for `WebApplication`, `LearningResource`, and Google rich snippet `FAQPage`.
+  - Crawlable on-page educational guide and interactive FAQ accordion.
+
 
 ## 🛠️ Tech Stack
 

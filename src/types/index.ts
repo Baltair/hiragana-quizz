@@ -9,7 +9,7 @@ export interface KanaItem {
   group: string;
 }
 
-export type QuizMode = 'learn_char' | 'learn_pronunciation' | 'learn_both';
+export type QuizMode = 'learn_char' | 'learn_romaji' | 'learn_pronunciation' | 'learn_both';
 
 export interface QuizConfig {
   choicesCount: number; // 2 to 10

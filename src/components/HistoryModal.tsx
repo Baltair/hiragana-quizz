@@ -76,6 +76,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({
     switch (mode) {
       case 'learn_char':
         return 'Learn Hiragana';
+      case 'learn_romaji':
       case 'learn_pronunciation':
         return 'Learn Romaji';
       case 'learn_both':

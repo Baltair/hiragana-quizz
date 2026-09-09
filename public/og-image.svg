@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#faf8f5" />
+      <stop offset="100%" stop-color="#f5efe6" />
+    </linearGradient>
+    <linearGradient id="sakuraGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fb7185" />
+      <stop offset="100%" stop-color="#f43f72" />
+    </linearGradient>
+    <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="16" stdDeviation="24" flood-color="#1c1917" flood-opacity="0.08" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGrad)" />
+
+  <!-- Subtle Japanese Pattern Accent lines -->
+  <circle cx="1020" cy="180" r="160" fill="none" stroke="#f43f72" stroke-opacity="0.08" stroke-width="32" stroke-dasharray="24 16" />
+  <circle cx="150" cy="520" r="120" fill="none" stroke="#78716c" stroke-opacity="0.05" stroke-width="18" />
+
+  <!-- Main Card Container -->
+  <rect x="100" y="85" width="1000" height="460" rx="32" fill="#ffffff" filter="url(#cardShadow)" stroke="#e7e5e4" stroke-width="1.5" />
+
+  <!-- Inner Badge: Sakura Icon Box -->
+  <rect x="160" y="145" width="80" height="80" rx="22" fill="url(#sakuraGrad)" />
+  <text x="200" y="202" font-family="'Zen Maru Gothic', 'Hiragino Sans', sans-serif" font-size="46" font-weight="900" fill="#ffffff" text-anchor="middle">あ</text>
+
+  <!-- Super Title / Tag -->
+  <rect x="260" y="160" width="230" height="36" rx="18" fill="#ffe4e6" />
+  <text x="275" y="184" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700" fill="#be123c">🌸 INTERACTIVE JAPANESE KANA</text>
+
+  <!-- Main Heading -->
+  <text x="160" y="285" font-family="system-ui, -apple-system, sans-serif" font-size="52" font-weight="900" fill="#1c1917" letter-spacing="-1">
+    Hiragana<tspan fill="#f43f72">Quiz</tspan> <tspan font-family="'Zen Maru Gothic', sans-serif" font-size="44" fill="#a8a29e">ひらがな</tspan>
+  </text>
+
+  <!-- Subtitle -->
+  <text x="160" y="340" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="500" fill="#57534e">
+    Master all 107 Japanese Hiragana with active recall, audio pronunciation &amp; speed drills.
+  </text>
+
+  <!-- Badges Grid -->
+  <!-- Badge 1: 107 Kana -->
+  <rect x="160" y="390" width="180" height="52" rx="14" fill="#f5f5f4" stroke="#e7e5e4" stroke-width="1" />
+  <text x="250" y="423" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="700" fill="#292524" text-anchor="middle">🔤 107 Characters</text>
+
+  <!-- Badge 2: Audio Pronunciation -->
+  <rect x="360" y="390" width="220" height="52" rx="14" fill="#f5f5f4" stroke="#e7e5e4" stroke-width="1" />
+  <text x="470" y="423" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="700" fill="#292524" text-anchor="middle">🔊 Native Speech Audio</text>
+
+  <!-- Badge 3: 100% Free & No Ads -->
+  <rect x="600" y="390" width="200" height="52" rx="14" fill="#f5f5f4" stroke="#e7e5e4" stroke-width="1" />
+  <text x="700" y="423" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="700" fill="#292524" text-anchor="middle">✨ 100% Free &amp; No Ads</text>
+
+  <!-- Right Side Visual: Kana floating cards -->
+  <g transform="translate(860, 160)">
+    <!-- Card 1 -->
+    <rect x="0" y="0" width="110" height="120" rx="18" fill="#fafaf9" stroke="#e7e5e4" stroke-width="2" />
+    <text x="55" y="70" font-family="'Zen Maru Gothic', sans-serif" font-size="48" font-weight="800" fill="#f43f72" text-anchor="middle">か</text>
+    <text x="55" y="100" font-family="system-ui, sans-serif" font-size="16" font-weight="700" fill="#78716c" text-anchor="middle">ka</text>
+
+    <!-- Card 2 -->
+    <rect x="60" y="90" width="110" height="120" rx="18" fill="#1c1917" />
+    <text x="115" y="160" font-family="'Zen Maru Gothic', sans-serif" font-size="48" font-weight="800" fill="#ffffff" text-anchor="middle">き</text>
+    <text x="115" y="190" font-family="system-ui, sans-serif" font-size="16" font-weight="700" fill="#fb7185" text-anchor="middle">ki</text>
+
+    <!-- Card 3 -->
+    <rect x="-30" y="150" width="105" height="115" rx="18" fill="#fafaf9" stroke="#e7e5e4" stroke-width="2" />
+    <text x="22" y="218" font-family="'Zen Maru Gothic', sans-serif" font-size="44" font-weight="800" fill="#292524" text-anchor="middle">す</text>
+    <text x="22" y="246" font-family="system-ui, sans-serif" font-size="15" font-weight="700" fill="#78716c" text-anchor="middle">su</text>
+  </g>
+</svg>

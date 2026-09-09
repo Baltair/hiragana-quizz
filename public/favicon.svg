@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <defs>
+    <linearGradient id="sakuraGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fb7185" />
+      <stop offset="100%" stop-color="#f43f72" />
+    </linearGradient>
+  </defs>
+  <rect width="120" height="120" rx="28" fill="url(#sakuraGrad)" />
+  <circle cx="60" cy="60" r="46" fill="none" stroke="rgba(255, 255, 255, 0.25)" stroke-width="2.5" stroke-dasharray="8 6" />
+  <text x="60" y="78" font-family="'Zen Maru Gothic', 'Hiragino Sans', sans-serif" font-size="62" font-weight="900" fill="#ffffff" text-anchor="middle">あ</text>
+</svg>
