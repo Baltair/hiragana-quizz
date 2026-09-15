@@ -326,7 +326,7 @@ export const App: React.FC = () => {
       />
 
       {/* Main Content View Switcher */}
-      <main className="flex-1 flex flex-col justify-center">
+      <main className="flex-1 flex flex-col justify-center w-full overflow-x-hidden">
         {screen === 'setup' && (
           <QuizSetup
             config={config}

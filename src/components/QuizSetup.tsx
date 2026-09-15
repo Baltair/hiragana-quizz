@@ -369,7 +369,7 @@ export const QuizSetup: React.FC<QuizSetupProps> = ({
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8 sm:py-12 animate-fade-in">
+    <div className="max-w-3xl mx-auto px-3 sm:px-4 py-6 sm:py-12 animate-fade-in w-full">
       {/* Hero Header */}
       <div className="text-center mb-8">
         <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-sakura-100 dark:bg-sakura-500/15 text-sakura-700 dark:text-sakura-300 mb-3 border border-sakura-200 dark:border-sakura-500/30">
@@ -500,7 +500,7 @@ export const QuizSetup: React.FC<QuizSetupProps> = ({
       </div>
 
       <div className="bg-white dark:bg-zen-800/90 rounded-2xl shadow-xl border border-zen-200 dark:border-zen-700 overflow-hidden backdrop-blur-sm">
-        <div className="p-6 sm:p-8 space-y-8">
+        <div className="p-4 sm:p-6 md:p-8 space-y-6 sm:space-y-8">
           {/* 1. Quiz Mode Selection */}
           <div>
             <label className="block text-sm font-bold text-zen-800 dark:text-zen-200 mb-3 flex items-center justify-between">
@@ -654,13 +654,13 @@ export const QuizSetup: React.FC<QuizSetupProps> = ({
             />
 
             {/* Quick Choice Buttons */}
-            <div className="grid grid-cols-9 gap-1.5 sm:gap-2">
+            <div className="grid grid-cols-5 sm:grid-cols-9 gap-1.5 sm:gap-2">
               {[2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
                 <button
                   key={num}
                   type="button"
                   onClick={() => handleChoicesChange(num)}
-                  className={`py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${
+                  className={`py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-bold transition-all ${
                     config.choicesCount === num
                       ? 'bg-sakura-500 text-white shadow-sm'
                       : 'bg-zen-100 dark:bg-zen-700/60 text-zen-700 dark:text-zen-300 hover:bg-zen-200 dark:hover:bg-zen-700'
@@ -707,7 +707,7 @@ export const QuizSetup: React.FC<QuizSetupProps> = ({
             </div>
 
             {/* Custom Rounds Input */}
-            <div className="flex items-center space-x-3">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
               <span className="text-xs text-zen-500 whitespace-nowrap">Or custom rounds:</span>
               <input
                 type="number"
@@ -715,7 +715,7 @@ export const QuizSetup: React.FC<QuizSetupProps> = ({
                 max="500"
                 value={config.rounds}
                 onChange={(e) => handleRoundsChange(parseInt(e.target.value || '0', 10))}
-                className="w-28 px-3 py-1.5 text-sm font-semibold text-zen-900 dark:text-white bg-zen-50 dark:bg-zen-700 border border-zen-200 dark:border-zen-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-sakura-400"
+                className="w-24 sm:w-28 px-2.5 sm:px-3 py-1.5 text-sm font-semibold text-zen-900 dark:text-white bg-zen-50 dark:bg-zen-700 border border-zen-200 dark:border-zen-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-sakura-400"
                 placeholder="0 = Infinite"
               />
               <span className="text-xs text-zen-400">
@@ -726,22 +726,22 @@ export const QuizSetup: React.FC<QuizSetupProps> = ({
         </div>
 
         {/* Start Button & Footer Quick Actions */}
-        <div className="p-6 sm:p-8 bg-zen-50/80 dark:bg-zen-800 border-t border-zen-200 dark:border-zen-700 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center space-x-3 w-full sm:w-auto">
+        <div className="p-4 sm:p-6 md:p-8 bg-zen-50/80 dark:bg-zen-800 border-t border-zen-200 dark:border-zen-700 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
+          <div className="flex items-center space-x-2 sm:space-x-3 w-full sm:w-auto">
             <button
               type="button"
               onClick={onOpenCheatsheet}
-              className="flex-1 sm:flex-none flex items-center justify-center space-x-2 px-4 py-2.5 rounded-xl border border-zen-300 dark:border-zen-600 text-zen-700 dark:text-zen-200 hover:bg-white dark:hover:bg-zen-700 text-sm font-medium transition-colors"
+              className="flex-1 sm:flex-none flex items-center justify-center space-x-1.5 sm:space-x-2 px-3 sm:px-4 py-2.5 rounded-xl border border-zen-300 dark:border-zen-600 text-zen-700 dark:text-zen-200 hover:bg-white dark:hover:bg-zen-700 text-xs sm:text-sm font-medium transition-colors"
             >
-              <BookOpen className="w-4 h-4 text-sakura-500" />
+              <BookOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-sakura-500 shrink-0" />
               <span>Cheatsheet</span>
             </button>
             <button
               type="button"
               onClick={onOpenHistory}
-              className="flex-1 sm:flex-none flex items-center justify-center space-x-2 px-4 py-2.5 rounded-xl border border-zen-300 dark:border-zen-600 text-zen-700 dark:text-zen-200 hover:bg-white dark:hover:bg-zen-700 text-sm font-medium transition-colors"
+              className="flex-1 sm:flex-none flex items-center justify-center space-x-1.5 sm:space-x-2 px-3 sm:px-4 py-2.5 rounded-xl border border-zen-300 dark:border-zen-600 text-zen-700 dark:text-zen-200 hover:bg-white dark:hover:bg-zen-700 text-xs sm:text-sm font-medium transition-colors"
             >
-              <History className="w-4 h-4 text-zen-500" />
+              <History className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-zen-500 shrink-0" />
               <span>Past Scores</span>
             </button>
           </div>
@@ -750,7 +750,7 @@ export const QuizSetup: React.FC<QuizSetupProps> = ({
             type="button"
             disabled={!isPoolValid}
             onClick={() => onStartQuiz()}
-            className={`w-full sm:w-auto flex items-center justify-center space-x-2 px-8 py-3 rounded-xl font-bold text-base transition-all ${
+            className={`w-full sm:w-auto flex items-center justify-center space-x-2 px-6 sm:px-8 py-3 rounded-xl font-bold text-sm sm:text-base transition-all ${
               isPoolValid
                 ? 'bg-gradient-to-r from-sakura-600 to-sakura-500 hover:from-sakura-700 hover:to-sakura-600 text-white shadow-lg shadow-sakura-500/25 hover:shadow-sakura-500/40 transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer focus:outline-none focus:ring-4 focus:ring-sakura-300'
                 : 'bg-zen-200 dark:bg-zen-700 text-zen-400 dark:text-zen-500 cursor-not-allowed opacity-60 shadow-none'
