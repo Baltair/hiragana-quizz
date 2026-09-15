@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { SessionResult, CumulativeCharacterStat } from '../types';
 import { clearAllHistory } from '../services/storage';
-import { playKanaSound } from '../data/hiragana';
+import { playKanaSound, ALL_KANA } from '../data/hiragana';
 import {
   X,
   History,
@@ -11,7 +11,10 @@ import {
   ChevronUp,
   AlertCircle,
   BarChart2,
+  Clock,
 } from 'lucide-react';
+
+export type MasteryTimeframe = 'all' | '30d' | '7d';
 
 interface HistoryModalProps {
   isOpen: boolean;
@@ -29,6 +32,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({
   onHistoryCleared,
 }) => {
   const [activeTab, setActiveTab] = useState<'sessions' | 'mastery'>('sessions');
+  const [masteryTimeframe, setMasteryTimeframe] = useState<MasteryTimeframe>('all');
   const [expandedSessionId, setExpandedSessionId] = useState<string | null>(null);
   const [confirmClear, setConfirmClear] = useState<boolean>(false);
 
@@ -44,12 +48,61 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({
     setExpandedSessionId((prev) => (prev === id ? null : id));
   };
 
-  // Convert cumulative stats into list and sort by accuracy or seen
-  const statsList = Object.values(cumulativeStats).filter((s) => s.totalSeen > 0);
+  // Convert cumulative stats into list based on selected timeframe
+  const statsList = useMemo(() => {
+    if (masteryTimeframe === 'all') {
+      return Object.values(cumulativeStats).filter((s) => s.totalSeen > 0);
+    }
+
+    const days = masteryTimeframe === '7d' ? 7 : 30;
+    const cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
+    const recentSessions = sessions.filter((s) => {
+      try {
+        return new Date(s.date).getTime() >= cutoff;
+      } catch {
+        return false;
+      }
+    });
+
+    const kanaMap = new Map(ALL_KANA.map((k) => [k.id, k]));
+    const aggregated: Record<string, CumulativeCharacterStat> = {};
+
+    for (const sess of recentSessions) {
+      for (const [kanaId, score] of Object.entries(sess.characterScores || {})) {
+        const kana = score.kana || kanaMap.get(kanaId);
+        if (!kana) continue;
+
+        if (!aggregated[kanaId]) {
+          aggregated[kanaId] = {
+            kana,
+            totalSeen: 0,
+            totalCorrect: 0,
+            accuracy: 0,
+            lastPracticed: sess.date,
+          };
+        }
+
+        aggregated[kanaId].totalSeen += score.timesSeen;
+        aggregated[kanaId].totalCorrect += score.timesCorrect;
+        if (new Date(sess.date).getTime() > new Date(aggregated[kanaId].lastPracticed).getTime()) {
+          aggregated[kanaId].lastPracticed = sess.date;
+        }
+      }
+    }
+
+    for (const stat of Object.values(aggregated)) {
+      stat.accuracy = stat.totalSeen > 0 ? Math.round((stat.totalCorrect / stat.totalSeen) * 100) : 0;
+    }
+
+    return Object.values(aggregated).filter((s) => s.totalSeen > 0);
+  }, [masteryTimeframe, cumulativeStats, sessions]);
+
   // Sort struggle kana (lowest accuracy first)
-  const struggleKana = [...statsList]
-    .filter((s) => s.accuracy < 75 && s.totalSeen >= 2)
-    .sort((a, b) => a.accuracy - b.accuracy);
+  const struggleKana = useMemo(() => {
+    return [...statsList]
+      .filter((s) => s.accuracy < 75 && s.totalSeen >= 2)
+      .sort((a, b) => a.accuracy - b.accuracy);
+  }, [statsList]);
 
   const formatSeconds = (sec: number) => {
     const mins = Math.floor(sec / 60);
@@ -290,12 +343,61 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({
           ) : (
             /* Character Mastery Tab */
             <div className="space-y-6">
+              {/* Timeframe Filter Bar */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 sm:p-4 rounded-2xl bg-zen-50/70 dark:bg-zen-800/60 border border-zen-200/80 dark:border-zen-700/70">
+                <div className="flex items-center space-x-2">
+                  <Clock className="w-4 h-4 text-sakura-500 shrink-0" />
+                  <span className="text-xs font-bold uppercase tracking-wider text-zen-700 dark:text-zen-300">
+                    Mastery Period
+                  </span>
+                </div>
+
+                <div className="flex items-center p-1 bg-zen-200/60 dark:bg-zen-700/60 rounded-xl">
+                  <button
+                    type="button"
+                    onClick={() => setMasteryTimeframe('all')}
+                    className={`flex-1 sm:flex-none px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                      masteryTimeframe === 'all'
+                        ? 'bg-white dark:bg-zen-850 text-zen-900 dark:text-white shadow-xs'
+                        : 'text-zen-600 dark:text-zen-400 hover:text-zen-900 dark:hover:text-zen-200'
+                    }`}
+                  >
+                    All Time
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setMasteryTimeframe('30d')}
+                    className={`flex-1 sm:flex-none px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                      masteryTimeframe === '30d'
+                        ? 'bg-white dark:bg-zen-850 text-zen-900 dark:text-white shadow-xs'
+                        : 'text-zen-600 dark:text-zen-400 hover:text-zen-900 dark:hover:text-zen-200'
+                    }`}
+                  >
+                    Last 30 Days
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setMasteryTimeframe('7d')}
+                    className={`flex-1 sm:flex-none px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                      masteryTimeframe === '7d'
+                        ? 'bg-white dark:bg-zen-850 text-zen-900 dark:text-white shadow-xs'
+                        : 'text-zen-600 dark:text-zen-400 hover:text-zen-900 dark:hover:text-zen-200'
+                    }`}
+                  >
+                    Last 7 Days
+                  </button>
+                </div>
+              </div>
+
               {/* Struggle Kana Alert Section */}
               {struggleKana.length > 0 && (
                 <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800">
                   <div className="flex items-center space-x-2 text-amber-800 dark:text-amber-300 font-bold text-sm mb-2">
                     <AlertCircle className="w-4 h-4" />
-                    <span>Characters to Practice (Accuracy &lt; 75%)</span>
+                    <span>
+                      Characters to Practice (Accuracy &lt; 75%)
+                      {masteryTimeframe === '7d' ? ' — Last 7 Days' : masteryTimeframe === '30d' ? ' — Last 30 Days' : ''}
+                    </span>
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2 mt-2">
                     {struggleKana.map((stat) => (
@@ -322,7 +424,13 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({
               {/* All Practiced Kana */}
               <div>
                 <h3 className="text-sm font-bold text-zen-800 dark:text-zen-200 mb-3 flex items-center justify-between">
-                  <span>All Practiced Characters ({statsList.length})</span>
+                  <span>
+                    {masteryTimeframe === '7d'
+                      ? `Practiced Characters — Last 7 Days (${statsList.length})`
+                      : masteryTimeframe === '30d'
+                      ? `Practiced Characters — Last 30 Days (${statsList.length})`
+                      : `All Practiced Characters (${statsList.length})`}
+                  </span>
                   <span className="text-xs font-normal text-zen-400">
                     Click character to hear audio
                   </span>
@@ -330,11 +438,15 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({
 
                 {statsList.length === 0 ? (
                   <div className="text-center py-12 text-zen-400 text-sm">
-                    No character stats recorded yet.
+                    {masteryTimeframe === '7d'
+                      ? 'No character stats recorded in the last 7 days.'
+                      : masteryTimeframe === '30d'
+                      ? 'No character stats recorded in the last 30 days.'
+                      : 'No character stats recorded yet.'}
                   </div>
                 ) : (
                   <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2.5">
-                    {statsList
+                    {[...statsList]
                       .sort((a, b) => b.totalSeen - a.totalSeen)
                       .map((stat) => (
                         <div

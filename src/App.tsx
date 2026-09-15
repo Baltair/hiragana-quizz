@@ -12,6 +12,7 @@ import {
   generateQuestion,
   MAIN_SUBSET_IDS,
   ALL_SUBSET_IDS,
+  shuffleArray,
 } from './data/hiragana';
 import {
   getSavedConfig,
@@ -115,8 +116,9 @@ export const App: React.FC = () => {
     (overridePool?: KanaItem[], overrideRounds?: number, overrideConfig?: QuizConfig) => {
       const activeConfig = overrideConfig || config;
       const isDrill = Boolean(overridePool && overridePool.length > 0);
-      const targetPool = isDrill ? overridePool! : getActiveKanaPool(activeConfig);
-      if (targetPool.length < 4) return;
+      const targetPool = isDrill ? shuffleArray(overridePool!) : getActiveKanaPool(activeConfig);
+      if (!isDrill && targetPool.length < 4) return;
+      if (isDrill && targetPool.length === 0) return;
 
       const broaderPool = getActiveKanaPool(activeConfig);
       const sessionRounds = isDrill ? (overrideRounds || overridePool!.length) : activeConfig.rounds;
@@ -128,7 +130,7 @@ export const App: React.FC = () => {
         saveLastConfig(config);
       }
 
-      setDrillPool(isDrill ? overridePool! : null);
+      setDrillPool(isDrill ? targetPool : null);
       setIsDrillMode(isDrill);
       setEffectiveRounds(sessionRounds);
 
@@ -141,9 +143,10 @@ export const App: React.FC = () => {
       setStartTime(Date.now());
       setCharacterScores({});
 
-      // Generate first question
+      // Generate first question (in drill mode, guarantees targetPool[0] is tested)
       const sessionConfig = { ...activeConfig, rounds: sessionRounds };
-      const q1 = generateQuestion(sessionConfig, targetPool, 1, undefined, broaderPool);
+      const q1Target = isDrill ? [targetPool[0]] : targetPool;
+      const q1 = generateQuestion(sessionConfig, q1Target, 1, undefined, broaderPool);
       setCurrentQuestion(q1);
       setScreen('quiz');
     },
@@ -281,10 +284,13 @@ export const App: React.FC = () => {
         // Next round
         const nextRound = currentRound + 1;
         setCurrentRound(nextRound);
-        const targetPool = isDrillMode && drillPool ? drillPool : getActiveKanaPool(config);
         const broaderPool = getActiveKanaPool(config);
         const sessionConfig = { ...config, rounds: effectiveRounds };
-        const nextQ = generateQuestion(sessionConfig, targetPool, nextRound, kana.id, broaderPool);
+        const nextTargetPool =
+          isDrillMode && drillPool && drillPool.length > 0
+            ? [drillPool[(nextRound - 1) % drillPool.length]]
+            : getActiveKanaPool(config);
+        const nextQ = generateQuestion(sessionConfig, nextTargetPool, nextRound, kana.id, broaderPool);
         setCurrentQuestion(nextQ);
       }
     },
@@ -310,6 +316,8 @@ export const App: React.FC = () => {
       finishSession(totalAnswered, totalCorrect, maxStreak, characterScores);
     } else {
       // If stopped before answering any question, return to setup
+      setIsDrillMode(false);
+      setDrillPool(null);
       setScreen('setup');
     }
   }, [totalAnswered, totalCorrect, maxStreak, characterScores, finishSession]);
@@ -355,7 +363,11 @@ export const App: React.FC = () => {
             result={latestResult}
             onRestartSame={() => (isDrillMode && drillPool ? handleStartQuiz(drillPool, drillPool.length) : handleStartQuiz())}
             onDrillMissed={(missedKana) => handleStartQuiz(missedKana, missedKana.length)}
-            onNewConfig={() => setScreen('setup')}
+            onNewConfig={() => {
+              setIsDrillMode(false);
+              setDrillPool(null);
+              setScreen('setup');
+            }}
             onOpenHistory={() => setIsHistoryOpen(true)}
           />
         )}
