@@ -36,29 +36,21 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({
   const [expandedSessionId, setExpandedSessionId] = useState<string | null>(null);
   const [confirmClear, setConfirmClear] = useState<boolean>(false);
 
-  if (!isOpen) return null;
-
-  const handleClear = () => {
-    clearAllHistory();
-    onHistoryCleared();
-    setConfirmClear(false);
-  };
-
-  const toggleExpandSession = (id: string) => {
-    setExpandedSessionId((prev) => (prev === id ? null : id));
-  };
-
   // Convert cumulative stats into list based on selected timeframe
   const statsList = useMemo(() => {
+    const safeCumulativeStats = cumulativeStats || {};
     if (masteryTimeframe === 'all') {
-      return Object.values(cumulativeStats).filter((s) => s.totalSeen > 0);
+      return Object.values(safeCumulativeStats).filter((s) => s && s.totalSeen > 0);
     }
 
     const days = masteryTimeframe === '7d' ? 7 : 30;
     const cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
-    const recentSessions = sessions.filter((s) => {
+    const safeSessions = Array.isArray(sessions) ? sessions : [];
+    const recentSessions = safeSessions.filter((s) => {
       try {
-        return new Date(s.date).getTime() >= cutoff;
+        if (!s || !s.date) return false;
+        const sessionTime = new Date(s.date).getTime();
+        return !isNaN(sessionTime) && sessionTime >= cutoff;
       } catch {
         return false;
       }
@@ -69,6 +61,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({
 
     for (const sess of recentSessions) {
       for (const [kanaId, score] of Object.entries(sess.characterScores || {})) {
+        if (!score) continue;
         const kana = score.kana || kanaMap.get(kanaId);
         if (!kana) continue;
 
@@ -82,8 +75,10 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({
           };
         }
 
-        aggregated[kanaId].totalSeen += score.timesSeen;
-        aggregated[kanaId].totalCorrect += score.timesCorrect;
+        const timesSeen = typeof score.timesSeen === 'number' ? score.timesSeen : 0;
+        const timesCorrect = typeof score.timesCorrect === 'number' ? score.timesCorrect : 0;
+        aggregated[kanaId].totalSeen += timesSeen;
+        aggregated[kanaId].totalCorrect += timesCorrect;
         if (new Date(sess.date).getTime() > new Date(aggregated[kanaId].lastPracticed).getTime()) {
           aggregated[kanaId].lastPracticed = sess.date;
         }
@@ -103,6 +98,18 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({
       .filter((s) => s.accuracy < 75 && s.totalSeen >= 2)
       .sort((a, b) => a.accuracy - b.accuracy);
   }, [statsList]);
+
+  if (!isOpen) return null;
+
+  const handleClear = () => {
+    clearAllHistory();
+    onHistoryCleared();
+    setConfirmClear(false);
+  };
+
+  const toggleExpandSession = (id: string) => {
+    setExpandedSessionId((prev) => (prev === id ? null : id));
+  };
 
   const formatSeconds = (sec: number) => {
     const mins = Math.floor(sec / 60);
