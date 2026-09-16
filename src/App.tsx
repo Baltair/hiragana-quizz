@@ -24,6 +24,7 @@ import {
   saveTheme,
   ThemeMode,
 } from './services/storage';
+import { trackQuizStart, trackQuizComplete } from './services/analytics';
 import { Header } from './components/Header';
 import { QuizSetup } from './components/QuizSetup';
 import { QuizCard } from './components/QuizCard';
@@ -149,6 +150,18 @@ export const App: React.FC = () => {
       const q1 = generateQuestion(sessionConfig, q1Target, 1, undefined, broaderPool);
       setCurrentQuestion(q1);
       setScreen('quiz');
+
+      // Track quiz start analytics event
+      trackQuizStart({
+        quiz_mode: activeConfig.mode,
+        choices_count: activeConfig.choicesCount,
+        rounds_planned: sessionRounds,
+        is_infinite_mode: sessionRounds === 0,
+        is_drill_mode: isDrill,
+        pool_size: targetPool.length,
+        include_dakuten: Boolean(activeConfig.includeDakuten),
+        include_combination: Boolean(activeConfig.includeCombination),
+      });
     },
     [config]
   );
@@ -234,8 +247,25 @@ export const App: React.FC = () => {
 
       setLatestResult(result);
       setScreen('results');
+
+      // Track quiz completion analytics event
+      const scoresList = Object.values(finalScores || {});
+      trackQuizComplete({
+        total_answered: finalAnswered,
+        total_correct: finalCorrect,
+        accuracy,
+        max_streak: finalMaxStreak,
+        duration_seconds: elapsedSeconds,
+        quiz_mode: config.mode,
+        choices_count: config.choicesCount,
+        rounds_planned: effectiveRounds,
+        is_drill_mode: isDrillMode,
+        missed_kana_count: scoresList.filter((s) => s.accuracy < 100).length,
+        perfect_kana_count: scoresList.filter((s) => s.accuracy === 100).length,
+        completed_naturally: effectiveRounds > 0 && finalAnswered >= effectiveRounds,
+      });
     },
-    [config, effectiveRounds, startTime, refreshStorageData]
+    [config, effectiveRounds, startTime, isDrillMode, refreshStorageData]
   );
 
   // Handle choice submission
