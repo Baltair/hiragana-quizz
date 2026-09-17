@@ -377,6 +377,7 @@ export const App: React.FC = () => {
 
         {screen === 'quiz' && currentQuestion && (
           <QuizCard
+            key={currentQuestion.id}
             question={currentQuestion}
             config={{ ...config, rounds: effectiveRounds }}
             totalAnswered={totalAnswered}

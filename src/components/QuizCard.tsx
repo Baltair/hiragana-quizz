@@ -26,7 +26,19 @@ export const QuizCard: React.FC<QuizCardProps> = ({
 }) => {
   const [selectedChoice, setSelectedChoice] = useState<string | null>(null);
   const [isAnswering, setIsAnswering] = useState<boolean>(false);
+  const [prevQuestionId, setPrevQuestionId] = useState<string>(question.id);
   const timerRef = useRef<number | null>(null);
+
+  // Synchronously reset selection and answering state on question change during render
+  if (question.id !== prevQuestionId) {
+    setPrevQuestionId(question.id);
+    setSelectedChoice(null);
+    setIsAnswering(false);
+    if (timerRef.current !== null) {
+      window.clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+  }
 
   // Determine prompt helper labels
   const isCharPrompt = question.promptType === 'char_to_romaji';
@@ -34,11 +46,8 @@ export const QuizCard: React.FC<QuizCardProps> = ({
     ? 'What is the Romaji for this character?'
     : 'Select the matching Hiragana character for this Romaji';
 
-  // Reset selection and answering state on new question, clearing any active delay timer
+  // Cleanup active timer on unmount or question change
   useEffect(() => {
-    setSelectedChoice(null);
-    setIsAnswering(false);
-
     return () => {
       if (timerRef.current !== null) {
         window.clearTimeout(timerRef.current);
