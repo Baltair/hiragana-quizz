@@ -369,7 +369,7 @@ export const App: React.FC = () => {
           <QuizSetup
             config={config}
             onChangeConfig={handleConfigChange}
-            onStartQuiz={(presetConfig) => handleStartQuiz(undefined, undefined, presetConfig)}
+            onStartQuiz={() => handleStartQuiz()}
             onOpenCheatsheet={() => setIsCheatsheetOpen(true)}
             onOpenHistory={() => setIsHistoryOpen(true)}
           />

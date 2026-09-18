@@ -71,9 +71,6 @@ The canonical Kana dataset is defined in [`src/data/hiragana.ts`](file:///src/da
    - Keys `1` through `9` correspond to choices `0` through `8`.
    - Key `0` corresponds to choice `9` (the 10th option).
    - Shortcut badges must remain vertically centered with choice labels.
-4. **Quick-Start Presets**:
-   - Preset cards on the setup screen (*Daily Warmup*, *Mastery Sprint*, *Endless Zen*) **immediately launch** the quiz session on click.
-   - Preset descriptions are shown via hoverable `ⓘ` tooltips with elevated z-index (`hover:z-30 focus-within:z-30` on buttons and `z-50` on tooltips) so they never render behind sibling buttons.
 
 ---
 
